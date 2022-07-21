@@ -15,7 +15,7 @@
             :key="childIndex"
             class="blockItem"
           >
-            <img :src="childItem.coverUrl" />
+            <img :src="`${childItem.coverUrl}?param=75y75`" />
             <div>
               <p>{{
                 childItem.albumName.length > 20
@@ -48,7 +48,7 @@ export default defineComponent({
       if (res.code == 200) {
         for (let i = 0; i < albumList.value.length; i++) {
           albumList.value[i] = {
-            leftBorder: i * imgWidth * 8.5,
+            leftBorder: i * imgWidth * 8.8,
             data: res.products.slice(i * 3, (i + 1) * 3)
           }
         }
@@ -82,7 +82,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .album-container {
-  height: 5.3333rem;
+  height: 6.1867rem;
   .title {
     display: flex;
     align-items: center;
@@ -103,6 +103,7 @@ export default defineComponent({
     overflow-x: auto;
     overflow-y: hidden;
     .block {
+      animation: appear 0.5s linear;
       & .blockItem:nth-of-type(3) {
         & div {
           border-bottom: none;
@@ -118,15 +119,15 @@ export default defineComponent({
         margin-right: 0.4267rem;
         margin-top: 0.16rem;
         img {
-          width: 1rem;
-          height: 1rem;
+          width: 1.3rem;
+          height: 1.3rem;
           border-radius: 6px;
           animation: appear 0.5s linear;
         }
         div {
-          width: 7.4667rem;
+          width: 6.8rem;
           border-bottom: 1px solid rgb(223, 220, 220);
-          margin-left: 0.1067rem;
+          margin-left: 0.32rem;
           padding-bottom: 0.1067rem;
           & p:nth-child(1) {
             font-size: 0.3733rem;

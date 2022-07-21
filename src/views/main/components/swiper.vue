@@ -2,7 +2,7 @@
   <div class="container">
     <van-swipe class="my-swipe" :autoplay="3000" :lazy-render="true">
       <van-swipe-item v-for="(item, index) in swipeArr" :key="index">
-        <img class="imgItem" :src="item.imageUrl" />
+        <img class="imgItem" :src="`${item.imageUrl}?param=353y130`" />
       </van-swipe-item>
     </van-swipe>
     <div class="naviList">

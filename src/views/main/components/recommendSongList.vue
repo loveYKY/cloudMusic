@@ -14,7 +14,7 @@
             height="2.7rem"
             radius="6px"
             fit="contain"
-            :src="item.picUrl"
+            :src="`${item.picUrl}?param=200y200`"
           />
           <div class="desc van-multi-ellipsis--l3" >{{ item.name }}</div>
           <div class="playCount">

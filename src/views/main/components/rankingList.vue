@@ -15,7 +15,7 @@
               <van-icon name="arrow" />
             </div>
             <div class="content">
-              <img :src="item.coverImgUrl" />
+              <img :src="`${item.coverImgUrl}?param=200y200`" />
               <div class="desc">
                 {{ item.description.slice(0, 100) + '...' }}
               </div>
@@ -128,6 +128,7 @@ export default defineComponent({
       border-radius: 10px;
       border: 1px solid #ebedf0;
       box-shadow: 3px 3px 4px #d8dade;
+      animation: appear 0.5s linear;
       .name {
         font-weight: bolder;
         display: flex;
