@@ -1,0 +1,7 @@
+/*** scss变量/函数  */
+// 背景
+@mixin background($url) {
+  background: url('@/assets/svg/' + $url) no-repeat;
+  background-size: contain;
+}
+/*** scss变量/函数 */

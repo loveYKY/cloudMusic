@@ -1,0 +1,223 @@
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+
+body {
+  line-height: 1;
+}
+
+ol,
+ul {
+}
+
+blockquote,
+q {
+  quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: '';
+  content: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+// 统一滚动条样式
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track-piece {
+  border-radius: 4px;
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: #E8EAEC;;
+}
+
+// 全局设置表格
+.ant-table-wrapper {
+  border-radius: 4px 4px 0 0;
+  .ant-table-scroll > .ant-table-header {
+    background: #f5f5f5;
+    border: 1px solid #e8eaec;
+    border-bottom: none;
+    box-sizing: border-box;
+    border-radius: 4px;
+  }
+  .ant-table-fixed-right > .ant-table-header {
+    border: 1px solid #e8eaec;
+    border-left: none;
+    border-bottom: none;
+  }
+  .ant-table-column-title {
+    font-family: PingFang SC;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 20px;
+    color: rgba(0, 0, 0, 0.85);
+  }
+}
+
+.ant-table-body {
+  .ant-table-thead {
+    background: #f5f5f5;
+  }
+}
+
+.ant-table-row {
+  height: 50px;
+}
+
+// steps
+.ant-steps-item-description {
+  margin-top: 8px;
+}
+
+.ant-form-item-label > label {
+  color: rgba(0, 0, 0, 0.65) !important;
+}
+
+.ant-btn-dangerous.ant-btn-primary {
+  background-color: #F9696A !important;
+  border-color: #F9696A !important;
+  &:hover, &:focus {
+    background-color: #ffc1bd !important;
+    border-color: #ffc1bd !important;
+  }
+}
+
+::-webkit-input-placeholder {
+  /* Chrome/Opera/Safari */
+  color: rgb(212, 208, 208);
+  font-size: 16px;
+  padding-left: 10px;
+}
+::-moz-placeholder {
+  /* Firefox 19+ */
+  color: rgb(212, 208, 208);
+  font-size: 16px;
+  padding-left: 10px;
+}
+:-ms-input-placeholder {
+  /* IE 10+ */
+  color: rgb(212, 208, 208);
+  font-size: 16px;
+  padding-left: 10px;
+}
+:-moz-placeholder {
+  /* Firefox 18- */
+  color: rgb(212, 208, 208);
+  font-size: 16px;
+  padding-left: 10px;
+}
+
+body, html {
+  height: 100%;
+  width: 100%;
+}
