@@ -17,9 +17,19 @@ const getAlbumList = () => {
   return request('get', '/album/list?limit=18')
 }
 
+const getAlbumDetail = id => {
+  return request('get', `/playlist/detail?id=${id}`)
+}
+
+const getSongDetail = ids => {
+  return request('get', `/song/detail?ids=${ids}`)
+}
+
 export default {
   getSwiper,
   getRecommendSongList,
   getRankingList,
-  getAlbumList
+  getAlbumList,
+  getAlbumDetail,
+  getSongDetail
 }
