@@ -1,10 +1,5 @@
 <template>
-  <div
-    class="albumSonge-container"
-    @scroll="changeHeaderColor"
-    @touchend="touchend"
-    @touchstart="touchstart"
-  >
+  <div class="albumSonge-container" @scroll="changeHeaderColor">
     <header class="header" :style="{ backgroundColor: color }">
       <div class="header-left">
         <van-icon name="down" class="back" size="24" />
@@ -66,7 +61,37 @@
         </div>
       </van-skeleton>
 
-      <div class="song-list"> </div>
+      <van-sticky offset-top="0.8533rem">
+        <div class="playAll">
+          <div>
+            <van-icon name="play-circle" size="24" color="red" />
+            <span
+              style="margin-left: 12px; font-weight: bolder; font-size: 14px"
+              >播放全部 ({{ albumDetail.trackCount }})</span
+            >
+          </div>
+          <div>
+            <van-icon name="certificate" size="24" />
+          </div>
+        </div>
+      </van-sticky>
+
+      <div class="songList">
+        <div v-for="(item, index) in songList" :key="index" class="song-item">
+          <div class="index">{{ index + 1 }}</div>
+
+          <div class="content">
+            <div class="alAndar">
+              <p>{{ item.name }}</p>
+              <p>{{ item.ar[0].name }}</p>
+            </div>
+            <div style="margin-right: 24px">
+              <van-icon name="play-circle-o" size="20" />
+            </div>
+          </div>
+        </div>
+        <div class="footer"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -81,7 +106,6 @@ export default defineComponent({
     const route = useRoute()
     const loading = ref(true)
     const albumId = ref(route.query.id)
-
     const albumDetail = ref({})
     const songList = ref([])
 
@@ -91,6 +115,7 @@ export default defineComponent({
       console.log(res)
       if (res.code == 200) {
         albumDetail.value = res.playlist
+        songList.value = res.playlist.tracks
         let trackIds = res.playlist.trackIds.map(item => {
           return item.id
         })
@@ -107,39 +132,20 @@ export default defineComponent({
 
     //滚动时修改header颜色
     const color = ref('rgba(255,255,255,0)')
-
     const changeHeaderColor = _.throttle(e => {
       if (e.target.scrollTop > 0) {
-        color.value = 'rgba(0,0,0,0.3)'
+        color.value = 'rgba(0,0,0,0.2)'
       } else {
         color.value = 'rgba(255,255,255,0)'
       }
     }, 100)
 
-    //滚动时监听滚动高度，控制背景图全关全开
-    const containerScrollTop = ref(null)
-    const touchstart = _.throttle(e => {
-      containerScrollTop.value = document.querySelector(
-        '.albumSonge-container'
-      ).scrollTop
-    }, 200)
-    const touchend = _.throttle(e => {
-      let temp = document.querySelector('.albumSonge-container').scrollTop
-      if (containerScrollTop.value - temp < 0) {
-        document.querySelector('.albumSonge-container').scrollTop =
-          document.querySelector('.cover').clientHeight
-      } else {
-        document.querySelector('.albumSonge-container').scrollTop = 0
-      }
-    }, 200)
-
-    //修改content的内容高度，使得容器可以滚动
-    onUpdated(() => {
+    //给最外部盒子一个固定高度，使得页面可以滚动
+    onMounted(() => {
       let bodyHeight = document.querySelector('body').clientHeight
-      let coverHeight = document.querySelector('.cover').clientHeight
 
-      document.querySelector('.content').style.height =
-        bodyHeight + coverHeight + 'px'
+      document.querySelector('.albumSonge-container').style.height =
+        bodyHeight + 'px'
     })
 
     return {
@@ -147,9 +153,7 @@ export default defineComponent({
       songList,
       loading,
       color,
-      changeHeaderColor,
-      touchend,
-      touchstart
+      changeHeaderColor
     }
   }
 })
@@ -158,7 +162,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .albumSonge-container {
   overflow: auto;
-  height: 675px;
+  height: 667px;
   &::-webkit-scrollbar {
     display: none;
   }
@@ -256,11 +260,60 @@ export default defineComponent({
     }
   }
 
-  .song-list {
-    position: sticky;
-    top: 0.8533rem;
-    height: 200px;
-    background-color: red;
+  .playAll {
+    background-color: #fff;
+    height: 1.28rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0.32rem;
+    z-index: 1000;
+    &:active {
+      background-color: rgb(190, 188, 188);
+    }
+    div {
+      display: flex;
+      align-items: center;
+    }
+  }
+  .songList {
+    .song-item {
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      &:active {
+        background-color: rgb(190, 188, 188);
+      }
+      .index {
+        height: 1.28rem;
+        width: 1.28rem;
+        text-align: center;
+        line-height: 1.28rem;
+        font-size: 0.3733rem;
+        color: rgb(179, 178, 178);
+      }
+      .content {
+        height: 1.28rem;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        .alAndar {
+          & p:nth-child(1) {
+            font-size: 0.3733rem;
+          }
+          & p:nth-child(2) {
+            margin-top: 0.1067rem;
+            color: rgb(167, 164, 164);
+          }
+        }
+      }
+    }
+    .footer {
+      height: 1.28rem;
+      width: 1.28rem;
+    }
   }
 }
 </style>
