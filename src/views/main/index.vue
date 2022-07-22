@@ -16,7 +16,7 @@
             <AlbumList></AlbumList>
           </div>
           <div class="block-three">
-            <RankingList v-if="visible"></RankingList>
+            <RankingList></RankingList>
           </div>
         </div>
       </div>
@@ -45,14 +45,14 @@ export default defineComponent({
     const clientHeight = ref(0)
     const headerHeight = ref(32)
     const visible = ref(false)
-    const io = new IntersectionObserver(entries => {
-      if (entries[0].intersectionRatio > 0) {
-        visible.value = true
-      }
-    })
+    // const io = new IntersectionObserver(entries => {
+    //   if (entries[0].intersectionRatio > 0) {
+    //     visible.value = true
+    //   }
+    // })
     onMounted(() => {
       clientHeight.value = document.querySelector('body').clientHeight
-      io.observe(document.querySelector('.block-three'))
+      // io.observe(document.querySelector('.block-three'))
     })
     const blockListHeight = computed({
       get: function () {
