@@ -51,7 +51,7 @@ export default defineComponent({
         let temp = menu.value.find(item => {
           return item.path == cur.path
         })
-        activeKey.value = temp.name
+        activeKey.value = temp?.name
       },
       {
         deep: true,

@@ -9,6 +9,14 @@ const routes = [
   {
     path: '/main',
     component: () => import('../views/main/index.vue')
+  },
+  {
+    path:'/albumSquare',
+    component: ()=> import('../views/albumSquare/index.vue')
+  },
+  {
+    path:'/albumSong',
+    component: ()=> import('../views/albumSong/index.vue')
   }
 ]
 
