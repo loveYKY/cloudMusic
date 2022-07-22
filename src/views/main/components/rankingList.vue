@@ -15,7 +15,7 @@
               <van-icon name="arrow" />
             </div>
             <div class="content">
-              <img :src="`${item.coverImgUrl}?param=200y200`" />
+              <img v-lazy="`${item.coverImgUrl}?param=200y200`" />
               <div class="desc">
                 {{ item.description.slice(0, 100) + '...' }}
               </div>

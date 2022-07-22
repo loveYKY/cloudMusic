@@ -13,6 +13,14 @@ const routes = [
   {
     path: '/songList',
     component: () => import('../views/songList/index.vue')
+  },
+  {
+    path:'/albumSquare',
+    component: ()=> import('../views/albumSquare/index.vue')
+  },
+  {
+    path:'/albumSong',
+    component: ()=> import('../views/albumSong/index.vue')
   }
 ]
 

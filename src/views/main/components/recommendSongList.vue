@@ -7,16 +7,22 @@
       /></van-button>
     </header>
     <div class="songList" @scroll="getScrollLeft">
-      <div v-for="(item, index) in songList" :key="index" class="imageItem">
+      <div
+        v-for="(item, index) in songList"
+        :key="index"
+        class="imageItem"
+        @click="goToDetail(item.id)"
+      >
         <template v-if="scrollLeft + clientWidth > item.leftBorder">
           <van-image
             width="2.7rem"
             height="2.7rem"
             radius="6px"
             fit="contain"
+            lazy-load
             :src="`${item.picUrl}?param=200y200`"
           />
-          <div class="desc van-multi-ellipsis--l3" >{{ item.name }}</div>
+          <div class="desc van-multi-ellipsis--l3">{{ item.name }}</div>
           <div class="playCount">
             <van-icon name="play-circle-o" />
             <span>{{ item.playCount }}万</span>
@@ -32,7 +38,7 @@ import { defineComponent, ref, onMounted, inject, watch } from 'vue'
 import Api from '@/api/index.js'
 import { useRouter } from 'vue-router'
 var _ = require('lodash')
-
+import { useRoute, useRouter } from 'vue-router'
 export default defineComponent({
   name: 'recommendSongList',
   setup() {
@@ -93,6 +99,14 @@ export default defineComponent({
 
     const toSongList = () => {
       router.push('/songList')
+    //跳转至歌单详情页面
+    const goToDetail = id => {
+      router.push({
+        path: '/albumSong',
+        query: {
+          id: id
+        }
+      })
     }
 
     return {
@@ -100,7 +114,9 @@ export default defineComponent({
       getScrollLeft,
       scrollLeft,
       clientWidth,
-      toSongList
+      toSongList,
+
+      goToDetail
     }
   }
 })
@@ -144,7 +160,7 @@ export default defineComponent({
         color: white;
       }
       .desc {
-        line-height: .3733rem;
+        line-height: 0.3733rem;
         overflow: hidden;
         white-space: pre-wrap;
         transform: scale(0.9);

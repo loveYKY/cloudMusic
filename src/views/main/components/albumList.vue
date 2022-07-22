@@ -15,7 +15,7 @@
             :key="childIndex"
             class="blockItem"
           >
-            <img :src="`${childItem.coverUrl}?param=75y75`" />
+            <img v-lazy="`${childItem.coverUrl}?param=75y75`" />
             <div>
               <p>{{
                 childItem.albumName.length > 20
