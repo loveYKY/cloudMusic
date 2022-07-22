@@ -21,8 +21,6 @@
         </div>
       </div>
     </van-pull-refresh>
-
-    <div class="autoPlay"> </div>
   </div>
 </template>
 
@@ -113,13 +111,6 @@ export default defineComponent({
       border-radius: 12px;
       margin-bottom: 0.32rem;
     }
-  }
-  .autoPlay {
-    height: 0.8533rem;
-    width: 100%;
-    background-color: red;
-    position: fixed;
-    bottom: 0;
   }
 }
 </style>
