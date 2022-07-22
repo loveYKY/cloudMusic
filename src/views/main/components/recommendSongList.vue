@@ -2,7 +2,7 @@
   <div class="lateralLazyLoading-container">
     <header class="title">
       <div>推荐歌单</div>
-      <van-button type="default" class="moreBtn"
+      <van-button type="default" class="moreBtn" :click="toSongList"
         ><span>更多</span><van-icon name="arrow"
       /></van-button>
     </header>
@@ -36,6 +36,7 @@
 <script>
 import { defineComponent, ref, onMounted, inject, watch } from 'vue'
 import Api from '@/api/index.js'
+import { useRouter } from 'vue-router'
 var _ = require('lodash')
 import { useRoute, useRouter } from 'vue-router'
 export default defineComponent({
@@ -96,6 +97,8 @@ export default defineComponent({
       }
     })
 
+    const toSongList = () => {
+      router.push('/songList')
     //跳转至歌单详情页面
     const goToDetail = id => {
       router.push({
@@ -111,6 +114,7 @@ export default defineComponent({
       getScrollLeft,
       scrollLeft,
       clientWidth,
+      toSongList,
 
       goToDetail
     }
