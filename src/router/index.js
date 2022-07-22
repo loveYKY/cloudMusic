@@ -9,6 +9,10 @@ const routes = [
   {
     path: '/main',
     component: () => import('../views/main/index.vue')
+  },
+  {
+    path: '/songList',
+    component: () => import('../views/songList/index.vue')
   }
 ]
 
