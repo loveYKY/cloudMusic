@@ -1,4 +1,7 @@
 export default {
+    changeTag(state, data) {
+        state.tag = data
+    },
   updatePlayList: (state, val) => {
     let index = state.playList.findIndex(item => {
       return item.id == val.id

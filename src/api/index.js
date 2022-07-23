@@ -17,6 +17,10 @@ const getAlbumList = () => {
   return request('get', '/album/list?limit=18')
 }
 
+const getSongList = (tag) => {
+  return request('get', '/top/playlist/highquality?cat='+tag)
+}
+
 const getAlbumDetail = id => {
   return request('get', `/playlist/detail?id=${id}`)
 }
@@ -30,6 +34,7 @@ export default {
   getRecommendSongList,
   getRankingList,
   getAlbumList,
+  getSongList,
   getAlbumDetail,
   getSongDetail
 }
