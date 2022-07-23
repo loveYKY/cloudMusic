@@ -1,7 +1,7 @@
 export default {
-    changeTag(state, data) {
-        state.tag = data
-    },
+  changeTag(state, data) {
+    state.tag = data
+  },
   updatePlayList: (state, val) => {
     let index = state.playList.findIndex(item => {
       return item.id == val.id
@@ -30,5 +30,8 @@ export default {
     } else {
       state.playControl = false
     }
+  },
+  timeupdate: (state, val) => {
+    state.currentTime = val
   }
 }

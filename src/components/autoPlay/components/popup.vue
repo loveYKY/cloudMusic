@@ -27,7 +27,10 @@
           size="48"
           @click="play"
         />
-        <img :src="`${playDetail.al.picUrl}?param=200y200`" :class="{ 'rotate-active': playControl }"/>
+        <img
+          :src="`${playDetail.al.picUrl}?param=200y200`"
+          :class="{ 'rotate-active': playControl }"
+        />
       </div>
 
       <div class="footer">
@@ -38,8 +41,8 @@
         </div>
         <van-slider
           class="slider"
-          v-model="timeValue"
-          button-size="4"
+          v-model="progress"
+          button-size="16"
           inactive-color="#7c7c7b"
           active-color="#fff"
           bar-height="0.5px"
@@ -60,7 +63,7 @@
 </template>
 
 <script>
-import { computed, defineComponent, toRefs, ref } from 'vue'
+import { computed, defineComponent, toRefs, ref, onMounted } from 'vue'
 import store from '@/store'
 export default defineComponent({
   props: {
@@ -100,16 +103,34 @@ export default defineComponent({
       show.value = false
     }
 
-    //当前播放时间
-    const timeValue = ref(50)
-
     //下一首歌
     const nextSong = () => {
       store.commit('changeIndex')
     }
+    //上一首歌
     const beforeSong = () => {
       store.commit('beforeSong')
     }
+
+    //当前播放时间
+    const currentTime = computed({
+      get: function () {
+        return store.state.currentTime
+      }
+    })
+    //总播放时长
+    const duration = ref(document.querySelector('#audio').duration)
+
+    // 播放进度
+    const progress = computed({
+      get: function () {
+        return (currentTime.value / duration.value) * 100
+      },
+      set: function (val) {
+        document.querySelector('#audio').currentTime =
+          (val * duration.value) / 100
+      }
+    })
 
     return {
       show,
@@ -117,9 +138,11 @@ export default defineComponent({
       closeOverlay,
       playControl,
       play,
-      timeValue,
+      currentTime,
       nextSong,
-      beforeSong
+      beforeSong,
+      progress,
+      duration
     }
   }
 })

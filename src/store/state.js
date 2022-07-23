@@ -14,6 +14,7 @@ export default {
     }
   ],
   playIndex: 0,
+  playControl:false,
+  currentTime:0,
   tag: "流行",
-  playControl:false
 }

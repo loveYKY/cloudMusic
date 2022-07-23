@@ -27,9 +27,10 @@
     v-show="true"
     @ended="ended"
     :src="` https://music.163.com/song/media/outer/url?id=${playList[playIndex].id}.mp3`"
+    @timeupdate="timeupdate"
   ></audio>
 
-  <Popup v-model:visible="visible" :playDetail="playList[playIndex]"></Popup>
+  <Popup v-model:visible="visible" :playDetail="playList[playIndex]" v-if="visible"></Popup>
 </template>
 
 <script>
@@ -71,6 +72,11 @@ export default defineComponent({
       Store.commit('changeIndex')
     }
 
+    const timeupdate = () => {
+      let currentTime = document.querySelector('#audio').currentTime
+      Store.commit('timeupdate', currentTime)
+    }
+
     watch(control, cur => {
       if (cur) {
         document.getElementById('audio').play()
@@ -88,7 +94,8 @@ export default defineComponent({
       playList,
       playIndex,
       ended,
-      changeControl
+      changeControl,
+      timeupdate
     }
   }
 })
