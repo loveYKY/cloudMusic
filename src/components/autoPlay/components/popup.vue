@@ -35,9 +35,9 @@
 
       <div class="footer">
         <div class="funcList">
-          <van-icon name="like-o" size="20" />
-          <van-icon name="chat-o" badge="99+" size="20" />
-          <van-icon name="wap-nav" size="20" />
+          <van-icon name="like-o" size="20" color="#fff"/>
+          <van-icon name="chat-o" badge="99+" size="20" color="#fff"/>
+          <van-icon name="wap-nav" size="20" color="#fff"/>
         </div>
         <van-slider
           class="slider"
@@ -241,7 +241,7 @@ export default defineComponent({
         justify-content: space-around;
       }
       .slider {
-        margin: 0.32rem 0;
+        margin: .64rem 0;
       }
       .playButton {
         display: flex;

@@ -2,7 +2,7 @@
   <div class="autoPlay-container" @click="changeVisible">
     <div class="container-left">
       <img :src="playList[playIndex].al.picUrl" class="alPic" />
-      <span class="alName">{{ playList[playIndex].name }}</span>
+      <p class="alName van-ellipsis">{{ playList[playIndex].name }}</p>
     </div>
     <div>
       <van-icon
@@ -30,7 +30,11 @@
     @timeupdate="timeupdate"
   ></audio>
 
-  <Popup v-model:visible="visible" :playDetail="playList[playIndex]" v-if="visible"></Popup>
+  <Popup
+    v-model:visible="visible"
+    :playDetail="playList[playIndex]"
+    v-if="visible"
+  ></Popup>
 </template>
 
 <script>
@@ -121,6 +125,7 @@ export default defineComponent({
       border-radius: 0.7467rem;
     }
     .alName {
+      width: 5rem;
       margin-left: 1.0667rem;
     }
   }
