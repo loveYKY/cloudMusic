@@ -37,7 +37,6 @@
 import { defineComponent, ref, onMounted, inject, watch } from 'vue'
 import Api from '@/api/index.js'
 var _ = require('lodash')
-import { useRoute, useRouter } from 'vue-router'
 export default defineComponent({
   name: 'recommendSongList',
   setup() {
@@ -98,8 +97,8 @@ export default defineComponent({
 
     const toSongList = () => {
       router.push('/songList')
+      //跳转至歌单详情页面
     }
-    //跳转至歌单详情页面
     const goToDetail = id => {
       router.push({
         path: '/albumSong',
@@ -108,7 +107,6 @@ export default defineComponent({
         }
       })
     }
-
     return {
       songList,
       getScrollLeft,

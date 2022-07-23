@@ -21,10 +21,20 @@ const getSongList = (tag) => {
   return request('get', '/top/playlist/highquality?cat='+tag)
 }
 
+const getAlbumDetail = id => {
+  return request('get', `/playlist/detail?id=${id}`)
+}
+
+const getSongDetail = ids => {
+  return request('get', `/song/detail?ids=${ids}`)
+}
+
 export default {
   getSwiper,
   getRecommendSongList,
   getRankingList,
   getAlbumList,
-  getSongList
+  getSongList,
+  getAlbumDetail,
+  getSongDetail
 }

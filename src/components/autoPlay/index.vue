@@ -1,8 +1,8 @@
 <template>
-  <div class="autoPlay-container">
+  <div class="autoPlay-container" @click="changeVisible">
     <div class="container-left">
       <img :src="playList[playIndex].al.picUrl" class="alPic" />
-      <span class="alName">{{ playList[playIndex].al.name }}</span>
+      <span class="alName">{{ playList[playIndex].name }}</span>
     </div>
     <div>
       <van-icon
@@ -10,14 +10,14 @@
         size="24"
         style="margin-right: 0.32rem"
         v-show="!control"
-        @click="changeControl"
+        @click.stop="changeControl"
       />
       <van-icon
         name="stop-circle-o"
         size="24"
         style="margin-right: 0.32rem"
         v-show="control"
-        @click="changeControl"
+        @click.stop="changeControl"
       />
       <van-icon name="wap-nav" size="24" style="margin-right: 0.32rem" />
     </div>
@@ -25,35 +25,69 @@
   <audio
     id="audio"
     v-show="true"
+    @ended="ended"
     :src="` https://music.163.com/song/media/outer/url?id=${playList[playIndex].id}.mp3`"
   ></audio>
+
+  <Popup v-model:visible="visible" :playDetail="playList[playIndex]"></Popup>
 </template>
 
 <script>
-import { defineComponent, ref, watch } from 'vue'
+import { defineComponent, ref, watch, computed } from 'vue'
 import Store from '@/store'
+import Popup from './components/popup.vue'
 export default defineComponent({
+  components: {
+    Popup
+  },
   setup() {
-    const control = ref(false)
-    const playList = Store.state.playList
-    const playIndex = Store.state.playIndex
+    const visible = ref(false)
+
+    const changeVisible = () => {
+      visible.value = true
+    }
+    const playList = computed({
+      get: function () {
+        return Store.state.playList
+      }
+    })
+    const playIndex = computed({
+      get: function () {
+        return Store.state.playIndex
+      }
+    })
+
+    const control = computed({
+      get: function () {
+        return Store.state.playControl
+      }
+    })
 
     const changeControl = () => {
-      control.value = !control.value
+      Store.commit('changeControl')
+    }
+
+    const ended = () => {
+      Store.commit('changeIndex')
     }
 
     watch(control, cur => {
       if (cur) {
         document.getElementById('audio').play()
-      }else {
+      } else {
         document.getElementById('audio').pause()
       }
     })
+    watch(playIndex, cur => {
+      document.getElementById('audio').autoplay = true
+    })
     return {
+      changeVisible,
+      visible,
       control,
       playList,
       playIndex,
-
+      ended,
       changeControl
     }
   }
