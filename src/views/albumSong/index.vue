@@ -86,7 +86,12 @@
           <div class="index">{{ index + 1 }}</div>
           <div class="content">
             <div class="alAndar">
-              <p>{{ item.name }}</p>
+              <p class="van-ellipsis"
+                ><span>{{ item.name }}</span
+                ><span style="color: rgb(167, 164, 164); margin-left: 4px">{{
+                  item.al.name
+                }}</span></p
+              >
               <p>{{ item.ar[0].name }}</p>
             </div>
             <div style="margin-right: 24px">
@@ -162,9 +167,11 @@ export default defineComponent({
     const playMusic = item => {
       let obj = {
         al: item.al,
-        id: item.id
+        id: item.id,
+        name: item.name
       }
       Store.commit('updatePlayList', obj)
+      document.getElementById('audio').autoplay = true
     }
 
     return {
@@ -192,7 +199,6 @@ export default defineComponent({
     color: #fff;
     box-sizing: border-box;
     position: fixed;
-    z-index: 1000;
     width: 100%;
     padding: 0.2133rem 0.2133rem;
     height: 0.8533rem;
@@ -235,7 +241,7 @@ export default defineComponent({
       border-radius: 0 0 80% 80%;
     }
     .detail {
-      z-index: 100;
+      z-index: -1;
       position: absolute;
       left: 50%;
       top: 1.6rem;
@@ -262,7 +268,7 @@ export default defineComponent({
     }
     .buttonList {
       position: relative;
-      z-index: 100;
+      z-index: -1;
       height: 0.8533rem;
       text-align: center;
       :deep(.van-button) {
@@ -321,6 +327,7 @@ export default defineComponent({
         align-items: center;
         justify-content: space-between;
         .alAndar {
+          width: 6.6667rem;
           & p:nth-child(1) {
             font-size: 0.3733rem;
           }

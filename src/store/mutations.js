@@ -11,6 +11,13 @@ export default {
     }
     state.playControl = true
   },
+  changeIndex: state => {
+    if (state.playIndex < state.playList.length - 1) {
+      state.playIndex++
+    } else {
+      state.playControl = false
+    }
+  },
   changeControl: (state, val) => {
     state.playControl = !state.playControl
   }
