@@ -20,5 +20,12 @@ export default {
   },
   changeControl: (state, val) => {
     state.playControl = !state.playControl
+  },
+  beforeSong: state => {
+    if (state.playIndex > 0) {
+      state.playIndex--
+    } else {
+      state.playControl = false
+    }
   }
 }

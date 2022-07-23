@@ -27,5 +27,6 @@ html {
   width: 100%;
   position: fixed;
   bottom: 0;
+  z-index: 10000;
 }
 </style>
