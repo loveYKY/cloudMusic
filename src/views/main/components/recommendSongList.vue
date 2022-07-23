@@ -2,7 +2,7 @@
   <div class="lateralLazyLoading-container">
     <header class="title">
       <div>推荐歌单</div>
-      <van-button type="default" class="moreBtn" :click="toSongList"
+      <van-button type="default" class="moreBtn" @click="toSongList"
         ><span>更多</span><van-icon name="arrow"
       /></van-button>
     </header>

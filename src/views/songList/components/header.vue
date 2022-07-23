@@ -1,66 +1,23 @@
 <template>
   <div class="container">
-    <van-icon name="arrow-left" size="20" />
-    
+    <van-icon class="back" name="arrow-left" size="25" @click="back"/>
+    <h2>歌单广场</h2>
   </div>
 </template>
 
 <script>
 import { defineComponent, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { Toast } from 'vant'
+import { useRouter } from 'vue-router'
 export default defineComponent({
-  name: 'mainHeader',
+  name: 'header',
   setup() {
-    const route = useRoute()
     const router = useRouter()
-
-    const menu = ref([
-      {
-        name: '我的',
-        path: '/'
-      },
-      {
-        name: '发现',
-        path: '/main'
-      },
-      {
-        name: '云村',
-        path: '/'
-      },
-      {
-        name: '视频',
-        path: '/'
-      }
-    ])
-
-    const activeKey = ref(null)
-
-    watch(
-      route,
-      cur => {
-        let temp = menu.value.find(item => {
-          return item.path == cur.path
-        })
-        activeKey.value = temp.name
-      },
-      {
-        deep: true,
-        immediate: true
-      }
-    )
-
-    const jump = () => {
-      Toast({
-        message: '敬请期待',
-        position: 'top'
-      })
+    const back = () => {
+      router.go(-1)
     }
 
     return {
-      menu,
-      activeKey,
-      jump
+      back,
     }
   }
 })
@@ -70,23 +27,15 @@ export default defineComponent({
 .container {
   padding: 0.3rem 0.3rem 0 0.3rem;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   margin-bottom: 0.3rem;
-  ul {
-    display: flex;
-    align-items: center;
-    font-size: 0.1042rem;
-    li {
-      margin-right: 0.3125rem;
-    }
-    & li:nth-child(4) {
-      margin-right: 0rem;
-    }
-    .active {
-      font-weight: bolder;
-      font-size: 0.4rem;
-    }
+  margin-top: 0.3rem;
+  font-family: Arial, Helvetica, sans-serif;
+  letter-spacing: 0.02rem;
+  .back {
+    position: absolute;
+    margin-right: 9rem;
   }
 }
 </style>

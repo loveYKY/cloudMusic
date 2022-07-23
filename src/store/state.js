@@ -14,5 +14,6 @@ export default {
       id: 1805395376
     }
   ],
-  playIndex: 0
+  playIndex: 0,
+  tag: "流行",
 }
