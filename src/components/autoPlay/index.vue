@@ -41,7 +41,7 @@ export default defineComponent({
     Popup
   },
   setup() {
-    const visible = ref(true)
+    const visible = ref(false)
 
     const changeVisible = () => {
       visible.value = true

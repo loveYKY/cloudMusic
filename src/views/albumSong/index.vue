@@ -127,7 +127,6 @@ export default defineComponent({
     //获取歌单详情信息
     const getAlbumDetail = async () => {
       let res = await Api.getAlbumDetail(albumId.value)
-      console.log(res)
       if (res.code == 200) {
         albumDetail.value = res.playlist
         songList.value = res.playlist.tracks
@@ -136,7 +135,6 @@ export default defineComponent({
         })
         loading.value = false
         let data = await Api.getSongDetail(trackIds.join(','))
-        console.log(data)
         if (data.code == 200) {
           songList.value = data.songs
         }
