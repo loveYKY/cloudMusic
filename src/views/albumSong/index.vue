@@ -2,7 +2,7 @@
   <div class="albumSonge-container" @scroll="changeHeaderColor">
     <header class="header" :style="{ backgroundColor: color }">
       <div class="header-left">
-        <van-icon name="down" class="back" size="24" />
+        <van-icon name="down" class="back" size="24" @click="goBack" />
         <span>歌单</span>
       </div>
       <div class="header-right">
@@ -77,9 +77,13 @@
       </van-sticky>
 
       <div class="songList">
-        <div v-for="(item, index) in songList" :key="index" class="song-item">
+        <div
+          v-for="(item, index) in songList"
+          :key="index"
+          class="song-item"
+          @click="playMusic(item)"
+        >
           <div class="index">{{ index + 1 }}</div>
-
           <div class="content">
             <div class="alAndar">
               <p>{{ item.name }}</p>
@@ -101,13 +105,19 @@ import { defineComponent, onMounted, onUpdated, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Api from '@/api/index.js'
 var _ = require('lodash')
+import Store from '@/store'
 export default defineComponent({
   setup() {
     const route = useRoute()
+    const router = useRouter()
     const loading = ref(true)
     const albumId = ref(route.query.id)
     const albumDetail = ref({})
     const songList = ref([])
+
+    const goBack = () => {
+      router.push('/main')
+    }
 
     //获取歌单详情信息
     const getAlbumDetail = async () => {
@@ -148,12 +158,24 @@ export default defineComponent({
         bodyHeight + 'px'
     })
 
+    //单独音乐加入到播放列表，并播放
+    const playMusic = item => {
+      let obj = {
+        al: item.al,
+        id: item.id
+      }
+      Store.commit('updatePlayList', obj)
+    }
+
     return {
+      goBack,
       albumDetail,
       songList,
       loading,
       color,
-      changeHeaderColor
+      changeHeaderColor,
+
+      playMusic
     }
   }
 })
@@ -278,7 +300,6 @@ export default defineComponent({
   }
   .songList {
     .song-item {
-      transition: all 0.3s;
       display: flex;
       align-items: center;
       justify-content: flex-start;

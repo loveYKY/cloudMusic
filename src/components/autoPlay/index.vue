@@ -30,24 +30,40 @@
 </template>
 
 <script>
-import { defineComponent, ref, watch } from 'vue'
+import { defineComponent, ref, watch, computed } from 'vue'
 import Store from '@/store'
 export default defineComponent({
   setup() {
-    const control = ref(false)
-    const playList = Store.state.playList
-    const playIndex = Store.state.playIndex
+    const playList = computed({
+      get: function () {
+        return Store.state.playList
+      }
+    })
+    const playIndex = computed({
+      get: function () {
+        return Store.state.playIndex
+      }
+    })
+
+    const control = computed({
+      get: function () {
+        return Store.state.playControl
+      }
+    })
 
     const changeControl = () => {
-      control.value = !control.value
+      Store.commit('changeControl')
     }
 
     watch(control, cur => {
       if (cur) {
         document.getElementById('audio').play()
-      }else {
+      } else {
         document.getElementById('audio').pause()
       }
+    })
+    watch(playIndex, cur => {
+      document.getElementById('audio').autoplay = true
     })
     return {
       control,
