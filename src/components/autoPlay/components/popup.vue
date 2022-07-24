@@ -1,5 +1,10 @@
 <template>
-  <van-overlay v-model:show="show" class-name="music-overlay" :z-index="100">
+  <van-overlay
+    v-model:show="show"
+    class-name="music-overlay"
+    :z-index="100"
+    :lazy-render="false"
+  >
     <img class="backgroundImg" :src="playDetail.al.picUrl" />
     <div class="overlay-container">
       <header class="overlay-header">
@@ -14,48 +19,51 @@
         </div>
       </header>
 
-      <img
-        src="@/assets/png/needle-ab.png"
-        class="needle"
-        :class="{ 'needle-play': playControl, 'needle-stop': !playControl }"
-      />
-
-      <div class="cdBackground">
-        <van-icon
-          :name="playControl ? 'stop-circle-o' : 'play-circle-o'"
-          class="play-circle"
-          size="48"
-          @click="play"
-        />
-        <img
-          :src="`${playDetail.al.picUrl}?param=200y200`"
-          :class="{ 'rotate-active': playControl }"
-        />
-      </div>
-
-      <div class="footer">
-        <div class="funcList">
-          <van-icon name="like-o" size="20" color="#fff"/>
-          <van-icon name="chat-o" badge="99+" size="20" color="#fff"/>
-          <van-icon name="wap-nav" size="20" color="#fff"/>
-        </div>
-        <van-slider
-          class="slider"
-          v-model="progress"
-          button-size="16"
-          inactive-color="#7c7c7b"
-          active-color="#fff"
-          bar-height="0.5px"
-        />
-        <div class="playButton">
-          <img src="@/assets/png/before.png" @click="nextSong" />
-          <van-icon
-            :name="playControl ? 'stop-circle-o' : 'play-circle-o'"
-            size="42"
-            color="white"
-            @click="play"
+      <div>
+        <Lyric v-show="showLyric" :musicId="playDetail.id"></Lyric>
+        <div v-show="!showLyric" class="cd-container" @click="showLyric = true">
+          <img
+            src="@/assets/png/needle-ab.png"
+            class="needle"
+            :class="{ 'needle-play': playControl, 'needle-stop': !playControl }"
           />
-          <img src="@/assets/png/next.png" @click="beforeSong" />
+
+          <div class="cdBackground">
+            <img
+              :src="`${playDetail.al.picUrl}?param=200y200`"
+              :class="{ 'rotate-active': playControl }"
+            />
+          </div>
+        </div>
+
+        <div class="footer">
+          <div class="funcList">
+            <van-icon name="like-o" size="20" color="#dee1e6" />
+            <van-icon name="chat-o" badge="99+" size="20" color="#dee1e6" />
+            <van-icon name="wap-nav" size="20" color="#dee1e6" />
+          </div>
+          <div class="time">
+            <span class="currentTime">{{ min_currentTime }}</span>
+            <van-slider
+              class="slider"
+              v-model="progress"
+              button-size="8"
+              inactive-color="#7c7c7b"
+              active-color="#dee1e6"
+              bar-height="0.5px"
+            />
+            <span class="duration">{{ min_duration }}</span>
+          </div>
+          <div class="playButton">
+            <img src="@/assets/png/before.png" @click="beforeSong" />
+            <van-icon
+              :name="playControl ? 'stop-circle-o' : 'play-circle-o'"
+              size="42"
+              color="#dee1e6"
+              @click="play"
+            />
+            <img src="@/assets/png/next.png" @click="nextSong" />
+          </div>
         </div>
       </div>
     </div>
@@ -63,9 +71,15 @@
 </template>
 
 <script>
-import { computed, defineComponent, toRefs, ref, onMounted } from 'vue'
+import { computed, defineComponent, toRefs, ref, watch } from 'vue'
 import store from '@/store'
+import Lyric from '../components/lyric.vue'
+import { tabEvent } from '@/utils/tapEvent.js'
+import moment from 'moment'
 export default defineComponent({
+  components: {
+    Lyric
+  },
   props: {
     visible: {
       type: Boolean,
@@ -78,6 +92,7 @@ export default defineComponent({
   },
   emits: ['update:visible'],
   setup(props, context) {
+    const showLyric = ref(false)
     const { visible, playDetail } = toRefs(props)
     console.log(playDetail.value)
     const show = computed({
@@ -119,7 +134,7 @@ export default defineComponent({
       }
     })
     //总播放时长
-    const duration = ref(document.querySelector('#audio').duration)
+    const duration = ref(0)
 
     // 播放进度
     const progress = computed({
@@ -132,7 +147,41 @@ export default defineComponent({
       }
     })
 
+    //当前播放时间(分钟)
+    const min_currentTime = computed({
+      get: function () {
+        let time = moment.duration(currentTime.value, 'seconds')
+        let seconds = time.seconds()
+        let minutes = time.minutes()
+        return moment({ m: minutes, s: seconds }).format('mm:ss')
+      }
+    })
+    const min_duration = computed({
+      get: function () {
+        let time = moment.duration(duration.value, 'seconds')
+        let seconds = time.seconds()
+        let minutes = time.minutes()
+        return moment({ m: minutes, s: seconds }).format('mm:ss')
+      }
+    })
+
+    watch(
+      show,
+      () => {
+        if (show.value) {
+          duration.value = document.querySelector('#audio').duration
+
+          console.log(moment.duration(duration.value, 'seconds').minutes())
+        }
+      },
+      {
+        deep: true,
+        immediate: true
+      }
+    )
+
     return {
+      showLyric,
       show,
       playDetail,
       closeOverlay,
@@ -142,7 +191,9 @@ export default defineComponent({
       nextSong,
       beforeSong,
       progress,
-      duration
+      duration,
+      min_currentTime,
+      min_duration
     }
   }
 })
@@ -186,21 +237,17 @@ export default defineComponent({
     .needle {
       transform-origin: 0 0;
       transition: transform 0.3s linear;
-    }
-    .needle-play {
-      position: absolute;
       top: 1.28rem;
       left: 60%;
       width: 2.5rem;
       z-index: 1;
+      position: absolute;
+    }
+    .needle-play {
       transform: rotate(0deg) translate(-50%);
     }
     .needle-stop {
-      position: absolute;
-      top: 1.28rem;
-      left: 60%;
       transform: rotate(-30deg) translate(-45%, -13%);
-      width: 2.5rem;
     }
     .rotate-active {
       animation: rotate 10s linear infinite;
@@ -233,15 +280,28 @@ export default defineComponent({
     }
     .footer {
       position: absolute;
-      bottom: 20px;
+      bottom: .5333rem;
+      height: 3.4667rem;
       width: 100%;
       .funcList {
         display: flex;
         align-items: center;
         justify-content: space-around;
       }
-      .slider {
-        margin: .64rem 0;
+      .time {
+        margin: 0.64rem 0.32rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        .currentTime {
+          color: #dee1e6;
+        }
+        .duration {
+          color: rgb(126, 126, 126);
+        }
+        .slider {
+          margin: 0 0.32rem;
+        }
       }
       .playButton {
         display: flex;

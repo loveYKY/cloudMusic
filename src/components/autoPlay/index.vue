@@ -33,7 +33,6 @@
   <Popup
     v-model:visible="visible"
     :playDetail="playList[playIndex]"
-    v-if="visible"
   ></Popup>
 </template>
 
