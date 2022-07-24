@@ -35,6 +35,7 @@
 
 <script>
 import { defineComponent, ref, onMounted, inject, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import Api from '@/api/index.js'
 var _ = require('lodash')
 export default defineComponent({
