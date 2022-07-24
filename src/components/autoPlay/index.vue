@@ -2,7 +2,7 @@
   <div class="autoPlay-container" @click="changeVisible">
     <div class="container-left">
       <img :src="playList[playIndex].al.picUrl" class="alPic" />
-      <span class="alName">{{ playList[playIndex].name }}</span>
+      <p class="alName van-ellipsis">{{ playList[playIndex].name }}</p>
     </div>
     <div>
       <van-icon
@@ -27,9 +27,14 @@
     v-show="true"
     @ended="ended"
     :src="` https://music.163.com/song/media/outer/url?id=${playList[playIndex].id}.mp3`"
+    @timeupdate="timeupdate"
   ></audio>
 
-  <Popup v-model:visible="visible" :playDetail="playList[playIndex]"></Popup>
+  <Popup
+    v-model:visible="visible"
+    :playDetail="playList[playIndex]"
+    v-if="visible"
+  ></Popup>
 </template>
 
 <script>
@@ -71,6 +76,11 @@ export default defineComponent({
       Store.commit('changeIndex')
     }
 
+    const timeupdate = () => {
+      let currentTime = document.querySelector('#audio').currentTime
+      Store.commit('timeupdate', currentTime)
+    }
+
     watch(control, cur => {
       if (cur) {
         document.getElementById('audio').play()
@@ -88,7 +98,8 @@ export default defineComponent({
       playList,
       playIndex,
       ended,
-      changeControl
+      changeControl,
+      timeupdate
     }
   }
 })
@@ -114,6 +125,7 @@ export default defineComponent({
       border-radius: 0.7467rem;
     }
     .alName {
+      width: 5rem;
       margin-left: 1.0667rem;
     }
   }

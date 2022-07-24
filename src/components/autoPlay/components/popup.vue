@@ -27,15 +27,43 @@
           size="48"
           @click="play"
         />
-        <img :src="`${playDetail.al.picUrl}?param=200y200`" />
+        <img
+          :src="`${playDetail.al.picUrl}?param=200y200`"
+          :class="{ 'rotate-active': playControl }"
+        />
+      </div>
+
+      <div class="footer">
+        <div class="funcList">
+          <van-icon name="like-o" size="20" color="#fff"/>
+          <van-icon name="chat-o" badge="99+" size="20" color="#fff"/>
+          <van-icon name="wap-nav" size="20" color="#fff"/>
+        </div>
+        <van-slider
+          class="slider"
+          v-model="progress"
+          button-size="16"
+          inactive-color="#7c7c7b"
+          active-color="#fff"
+          bar-height="0.5px"
+        />
+        <div class="playButton">
+          <img src="@/assets/png/before.png" @click="nextSong" />
+          <van-icon
+            :name="playControl ? 'stop-circle-o' : 'play-circle-o'"
+            size="42"
+            color="white"
+            @click="play"
+          />
+          <img src="@/assets/png/next.png" @click="beforeSong" />
+        </div>
       </div>
     </div>
   </van-overlay>
 </template>
 
 <script>
-import { computed, defineComponent, toRefs } from 'vue'
-import Store from '@/store'
+import { computed, defineComponent, toRefs, ref, onMounted } from 'vue'
 import store from '@/store'
 export default defineComponent({
   props: {
@@ -75,12 +103,46 @@ export default defineComponent({
       show.value = false
     }
 
+    //下一首歌
+    const nextSong = () => {
+      store.commit('changeIndex')
+    }
+    //上一首歌
+    const beforeSong = () => {
+      store.commit('beforeSong')
+    }
+
+    //当前播放时间
+    const currentTime = computed({
+      get: function () {
+        return store.state.currentTime
+      }
+    })
+    //总播放时长
+    const duration = ref(document.querySelector('#audio').duration)
+
+    // 播放进度
+    const progress = computed({
+      get: function () {
+        return (currentTime.value / duration.value) * 100
+      },
+      set: function (val) {
+        document.querySelector('#audio').currentTime =
+          (val * duration.value) / 100
+      }
+    })
+
     return {
       show,
       playDetail,
       closeOverlay,
       playControl,
-      play
+      play,
+      currentTime,
+      nextSong,
+      beforeSong,
+      progress,
+      duration
     }
   }
 })
@@ -117,7 +179,7 @@ export default defineComponent({
         .longFont {
           display: inline-block;
           white-space: nowrap;
-          animation: move 3s linear infinite;
+          animation: move 8s linear infinite;
         }
       }
     }
@@ -140,12 +202,17 @@ export default defineComponent({
       transform: rotate(-30deg) translate(-45%, -13%);
       width: 2.5rem;
     }
+    .rotate-active {
+      animation: rotate 10s linear infinite;
+    }
     .cdBackground {
       position: relative;
       margin: 2rem auto;
       background-image: url('@/assets/png/cd.png');
       height: 5.3333rem;
       width: 5.3333rem;
+      background-repeat: no-repeat;
+      background-size: 100%;
       .play-circle {
         color: #fff;
         position: absolute;
@@ -164,15 +231,41 @@ export default defineComponent({
         border-radius: 4rem;
       }
     }
+    .footer {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      .funcList {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+      }
+      .slider {
+        margin: .64rem 0;
+      }
+      .playButton {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+      }
+    }
   }
 }
 
 @keyframes move {
   0% {
-    transform: translate(150%, 0);
+    transform: translate(110%, 0);
   }
   100% {
-    transform: translate(calc(-150%), 0);
+    transform: translate(calc(-110%), 0);
+  }
+}
+@keyframes rotate {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
   }
 }
 </style>

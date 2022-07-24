@@ -203,6 +203,7 @@ export default defineComponent({
     display: flex;
     align-items: center;
     justify-content: space-between;
+    z-index: 1;
     .header-left {
       display: flex;
       align-items: center;
@@ -224,7 +225,6 @@ export default defineComponent({
       }
     }
   }
-
   .cover {
     position: relative;
     padding-bottom: 0.32rem;
@@ -235,11 +235,9 @@ export default defineComponent({
       background-repeat: no-repeat;
       filter: blur(100px);
       position: relative;
-      z-index: -1;
       border-radius: 0 0 80% 80%;
     }
     .detail {
-      z-index: -1;
       position: absolute;
       left: 50%;
       top: 1.6rem;
@@ -266,7 +264,6 @@ export default defineComponent({
     }
     .buttonList {
       position: relative;
-      z-index: -1;
       height: 0.8533rem;
       text-align: center;
       :deep(.van-button) {

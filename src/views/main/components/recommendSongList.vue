@@ -38,6 +38,7 @@ import { defineComponent, ref, onMounted, inject, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import Api from '@/api/index.js'
 var _ = require('lodash')
+import { useRouter } from 'vue-router'
 export default defineComponent({
   name: 'recommendSongList',
   setup() {
