@@ -50,6 +50,7 @@ import { computed, defineComponent, onUpdated, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Api from '@/api/index'
 import moment from 'moment'
+var _ = require('lodash')
 export default defineComponent({
   setup(props, context) {
     const route = useRoute()
@@ -79,6 +80,12 @@ export default defineComponent({
       offsetY: 0,
       //渲染条数
       pageNum: 10,
+      //缓存区长度,
+      cache: 5,
+      //起始索引
+      startIndex: 0,
+      //结束索引
+      endIndex: 0,
       //预估高度
       estimatedItemSize: 100,
       //列表项渲染后存储每一项的高度以及位置信息
@@ -165,24 +172,57 @@ export default defineComponent({
       }
     }
 
-    const scrollFn = e => {
+    //二分法查找
+    const binarySearch = (list, value) => {
+      let start = 0
+      let end = list.length - 1
+      let tempIndex = null
+      while (start <= end) {
+        let midIndex = parseInt((start + end) / 2)
+        let midValue = list[midIndex].bottom
+        if (midValue === value) {
+          return midIndex + 1
+        } else if (midValue < value) {
+          start = midIndex + 1
+        } else if (midValue > value) {
+          if (tempIndex === null || tempIndex > midIndex) {
+            tempIndex = midIndex
+          }
+          end = end - 1
+        }
+      }
+      return tempIndex
+    }
+
+    const scrollFn = _.throttle(e => {
       let scrollTop = e.target.scrollTop
-      let startIndex = visual_scroll.value.positions.find(
-        i => i && i.bottom > scrollTop
-      ).index
+
+      //获取新的起始索引
+      visual_scroll.value.startIndex = Math.max(
+        0,
+        binarySearch(visual_scroll.value.positions, scrollTop) -
+          visual_scroll.value.cache
+      )
+      //获取新的终止索引
+      visual_scroll.value.endIndex =
+        visual_scroll.value.startIndex +
+        visual_scroll.value.pageNum +
+        visual_scroll.value.cache
 
       //获取偏移量
-      if (startIndex >= 1) {
+      if (visual_scroll.value.startIndex >= 1) {
         visual_scroll.value.offsetY =
-          visual_scroll.value.positions[startIndex - 1].bottom
+          visual_scroll.value.positions[
+            visual_scroll.value.startIndex - 1
+          ].bottom
       } else {
         visual_scroll.value.offsetY = 0
       }
 
       //更新渲染数组
       curList.value = comment.value.slice(
-        startIndex,
-        startIndex + visual_scroll.value.pageNum
+        visual_scroll.value.startIndex,
+        visual_scroll.value.endIndex
       )
 
       //如果滚动到底，请求新数据
@@ -195,7 +235,7 @@ export default defineComponent({
         modelRef.value.offset = modelRef.value.pageIndex * modelRef.value.limit
         updateComment()
       }
-    }
+    }, 100)
 
     onUpdated(() => {
       let itemList = document.getElementsByClassName('comment-item')
