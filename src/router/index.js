@@ -1,6 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 
-
 const routes = [
   {
     path: '/',
@@ -15,12 +14,16 @@ const routes = [
     component: () => import('../views/songList/index.vue')
   },
   {
-    path:'/albumSquare',
-    component: ()=> import('../views/albumSquare/index.vue')
+    path: '/albumSquare',
+    component: () => import('../views/albumSquare/index.vue')
   },
   {
-    path:'/albumSong',
-    component: ()=> import('../views/albumSong/index.vue')
+    path: '/albumSong',
+    component: () => import('../views/albumSong/index.vue')
+  },
+  {
+    path: '/comment',
+    component: () => import('@/components/comment/index.vue')
   }
 ]
 

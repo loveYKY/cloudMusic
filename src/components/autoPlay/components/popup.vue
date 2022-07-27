@@ -20,7 +20,11 @@
       </header>
 
       <div>
-        <Lyric v-show="showLyric" :musicId="playDetail.id"></Lyric>
+        <Lyric
+          v-show="showLyric"
+          :musicId="playDetail.id"
+          @closeLyric="showLyric = false"
+        ></Lyric>
         <div v-show="!showLyric" class="cd-container" @click="showLyric = true">
           <img
             src="@/assets/png/needle-ab.png"
@@ -170,8 +174,6 @@ export default defineComponent({
       () => {
         if (show.value) {
           duration.value = document.querySelector('#audio').duration
-
-          console.log(moment.duration(duration.value, 'seconds').minutes())
         }
       },
       {
@@ -280,7 +282,7 @@ export default defineComponent({
     }
     .footer {
       position: absolute;
-      bottom: .5333rem;
+      bottom: 0.5333rem;
       height: 3.4667rem;
       width: 100%;
       .funcList {

@@ -1,5 +1,5 @@
 <template>
-  <div class="lyric-container">
+  <div class="lyric-container" @click="close">
     <div class="content" v-if="control">
       <template v-for="(item, index) in lyric" :key="index">
         <p
@@ -26,6 +26,7 @@ export default defineComponent({
       require: true
     }
   },
+  emits:['closeLyric'],
   setup(props, context) {
     const { musicId } = toRefs(props)
     //歌词数组
@@ -101,12 +102,16 @@ export default defineComponent({
       }
     )
 
+    const close = ()=>{
+        context.emit('closeLyric')
+    }
     return {
       control,
       musicId,
       lyric,
       currentTime,
-      currentLyricIndex
+      currentLyricIndex,
+      close
     }
   }
 })
@@ -119,9 +124,9 @@ export default defineComponent({
   text-align: center;
   overflow: auto;
   .content {
-    transform: translateY(4rem);
+    transform: translateY(30vh);
   }
-  &::-webkit-scrollbar {
+  &::-webkit-scrollbar {    
     display: none;
   }
   .lyric {

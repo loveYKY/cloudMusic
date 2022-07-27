@@ -43,7 +43,7 @@
                   : albumDetail.subscribedCount
               }}</van-button
             >
-            <van-button type="default"
+            <van-button type="default" @click="jumpToComment"
               ><van-icon name="chat-o" style="margin-right: 4px" />{{
                 albumDetail.commentCount > 10000
                   ? (albumDetail.commentCount / 10000).toFixed(0) + '万'
@@ -172,6 +172,21 @@ export default defineComponent({
       document.getElementById('audio').autoplay = true
     }
 
+    //跳转到歌单评论区
+    const jumpToComment = () => {
+      router.push({
+        path: '/comment',
+        query: {
+          type: 'playlist',
+          id: albumId.value,
+          picUrl: albumDetail.value.coverImgUrl,
+          name: albumDetail.value.name,
+          number:albumDetail.value.commentCount,
+          creator:albumDetail.value.creator.nickname
+        }
+      })
+    }
+
     return {
       goBack,
       albumDetail,
@@ -180,7 +195,8 @@ export default defineComponent({
       color,
       changeHeaderColor,
 
-      playMusic
+      playMusic,
+      jumpToComment,
     }
   }
 })
@@ -189,7 +205,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 .albumSonge-container {
   overflow: auto;
-  height: 667px;
   &::-webkit-scrollbar {
     display: none;
   }

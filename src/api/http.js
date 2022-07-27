@@ -9,7 +9,8 @@ const RESP_STATUS = {
 
 const http = Axios.create({
   responseType: 'json',
-  timeout: 30000
+  timeout: 30000,
+  withCredentials: true
 })
 
 /**

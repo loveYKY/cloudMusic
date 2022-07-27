@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <van-icon name="wap-nav" size="20" />
+    <van-icon name="wap-nav" size="20" @click="showPopup" />
     <ul>
       <li
         v-for="(item, index) in menu"
@@ -11,6 +11,8 @@
       >
     </ul>
     <van-icon name="search" size="20" />
+
+    <LeftPopupVue v-model:visible="showLeftPopup" teleport="body"></LeftPopupVue>
   </div>
 </template>
 
@@ -18,8 +20,12 @@
 import { defineComponent, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Toast } from 'vant'
+import LeftPopupVue from './leftPopup.vue'
 export default defineComponent({
   name: 'mainHeader',
+  components: {
+    LeftPopupVue
+  },
   setup() {
     const route = useRoute()
     const router = useRouter()
@@ -66,10 +72,17 @@ export default defineComponent({
       })
     }
 
+    const showLeftPopup = ref(false)
+    const showPopup = () => {
+      showLeftPopup.value = true
+    }
+
     return {
       menu,
       activeKey,
-      jump
+      jump,
+      showLeftPopup,
+      showPopup
     }
   }
 })

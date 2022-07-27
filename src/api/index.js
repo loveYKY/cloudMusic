@@ -1,6 +1,12 @@
 import { request } from './helper'
 
 //main
+
+//游客登陆
+const getAnonimousCookie = () => {
+  return request('get', '/register/anonimous')
+}
+
 const getSwiper = () => {
   return request('get', '/banner')
 }
@@ -33,7 +39,15 @@ const getLyric = id => {
   return request('get', `/lyric?id=${id}`)
 }
 
+const getComment = (type, id, limit, offset) => {
+  return request(
+    'get',
+    `/comment/${type}?id=${id}&limit=${limit}&offset=${offset}`
+  )
+}
+
 export default {
+  getAnonimousCookie,
   getSwiper,
   getRecommendSongList,
   getRankingList,
@@ -41,5 +55,6 @@ export default {
   getSongList,
   getAlbumDetail,
   getSongDetail,
-  getLyric
+  getLyric,
+  getComment
 }

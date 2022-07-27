@@ -31,6 +31,8 @@ import Swiper from './components/swiper.vue'
 import RecommendSongList from './components/recommendSongList.vue'
 import RankingList from './components/rankingList.vue'
 import AlbumList from './components/albumList.vue'
+import Api from '@/api'
+import Cookie from 'js-cookie'
 export default defineComponent({
   components: {
     MainHeader,
@@ -43,14 +45,9 @@ export default defineComponent({
     const clientHeight = ref(0)
     const headerHeight = ref(32)
     const visible = ref(false)
-    // const io = new IntersectionObserver(entries => {
-    //   if (entries[0].intersectionRatio > 0) {
-    //     visible.value = true
-    //   }
-    // })
+
     onMounted(() => {
       clientHeight.value = document.querySelector('body').clientHeight
-      // io.observe(document.querySelector('.block-three'))
     })
     const blockListHeight = computed({
       get: function () {
@@ -71,6 +68,16 @@ export default defineComponent({
         loading.value = false
       }, 1000)
     }
+
+    //游客登陆
+    const getAnonimousCookie = async () => {
+      let res = await Api.getAnonimousCookie()
+
+      if (res.code == 200) {
+        Cookie.set('cookie', res.cookie)
+      }
+    }
+    getAnonimousCookie()
 
     //向子组件注入刷新事件变量loading
     provide('refresh', loading)
