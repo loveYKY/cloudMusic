@@ -95,9 +95,6 @@ export default defineComponent({
 <style lang="scss" scoped>
 .comment-container {
   background-color: rgb(245 242 242);
-  &::-webkit-scrollbar {
-    display: none;
-  }
   .header {
     background-color: #fff;
     box-sizing: border-box;
@@ -160,7 +157,9 @@ export default defineComponent({
       .outsideBox {
         height: 75vh;
         overflow: auto;
-
+        &::-webkit-scrollbar {
+          display: none;
+        }
         .comment-item {
           display: flex;
           justify-content: flex-start;
@@ -184,7 +183,7 @@ export default defineComponent({
               color: #999;
             }
             .detail-comment {
-              margin: 0.32rem 0 .2133rem 0;
+              margin: 0.32rem 0 0.2133rem 0;
               font-family: Verdana, Geneva, Tahoma, sans-serif;
               font-size: 13px;
             }
