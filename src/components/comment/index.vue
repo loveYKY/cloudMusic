@@ -21,11 +21,14 @@
 
       <div class="comment">
         <div class="title">评论区</div>
-        <div class="outsideBox">
-          <div class="insideBox">
-            <div class="comment-itemList">
-              <template v-for="(item, index) in comment" :key="index">
-                <div class="comment-item">
+        <div class="outsideBox" @scroll="scrollFn">
+          <div class="insideBox" :style="`height: ${listHeight}px`">
+            <div
+              class="comment-itemList"
+              :style="`transform:translateY(${visual_scroll.offsetY}px)`"
+            >
+              <template v-for="(item, index) in curList" :key="index">
+                <div class="comment-item" :class="`item${item.key}`">
                   <img :src="`${item.user.avatarUrl}?param=30y30`" />
                   <div class="comment-item-detail">
                     <p class="detail-nickname">{{ item.user.nickname }}</p>
@@ -43,19 +46,19 @@
 </template>
 
 <script>
-import { defineComponent, onMounted, ref } from 'vue'
+import { computed, defineComponent, onUpdated, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Api from '@/api/index'
 import moment from 'moment'
 export default defineComponent({
   setup(props, context) {
     const route = useRoute()
-    console.log(route.query)
     const goBack = () => {
       window.history.back(-1)
     }
 
     const modelRef = ref({
+      pageIndex: 0,
       offset: 0,
       limit: 100,
       id: route.query.id,
@@ -66,8 +69,32 @@ export default defineComponent({
       creator: route.query.creator
     })
 
+    //完整的数据数组
     const comment = ref([])
+    //渲染的数据数组,
+    const curList = ref([])
+    //虚拟滚动参数
+    const visual_scroll = ref({
+      //可视区域偏移高度
+      offsetY: 0,
+      //渲染条数
+      pageNum: 10,
+      //预估高度
+      estimatedItemSize: 100,
+      //列表项渲染后存储每一项的高度以及位置信息
+      positions: []
+    })
+    const listHeight = computed({
+      get: function () {
+        if (visual_scroll.value.positions.length == 0) return 0
+        return visual_scroll.value.positions[
+          visual_scroll.value.positions.length - 1
+        ].bottom
+      }
+    })
 
+    let control = ref(true)
+    //请求获得评论信息
     const getComment = async () => {
       let res = await Api.getComment(
         modelRef.value.type,
@@ -76,17 +103,139 @@ export default defineComponent({
         modelRef.value.offset
       )
       if (res.code == 200) {
-        comment.value = res.comments
-        console.log(comment.value)
+        comment.value = res.comments.map((item, index) => {
+          return {
+            ...item,
+            key: index
+          }
+        })
+
+        visual_scroll.value.positions = comment.value.map((item, index) => {
+          return {
+            index: index,
+            top: index * visual_scroll.value.estimatedItemSize,
+            height: visual_scroll.value.estimatedItemSize,
+            bottom: (index + 1) * visual_scroll.value.estimatedItemSize
+          }
+        })
+
+        curList.value = comment.value.slice(0, visual_scroll.value.pageNum)
       }
     }
 
     getComment()
 
+    const updateComment = async () => {
+      if (modelRef.value.offset > modelRef.value.number) return
+      let res = await Api.getComment(
+        modelRef.value.type,
+        modelRef.value.id,
+        modelRef.value.limit,
+        modelRef.value.offset
+      )
+      if (res.code == 200) {
+        let arr = res.comments.map((item, index) => {
+          return {
+            ...item,
+            key: index + modelRef.value.offset
+          }
+        })
+        comment.value = comment.value.concat(arr)
+
+        let lastBottom = 0
+        if (visual_scroll.value.positions.length != 0) {
+          lastBottom =
+            visual_scroll.value.positions[
+              visual_scroll.value.positions.length - 1
+            ].bottom
+        }
+        visual_scroll.value.positions = visual_scroll.value.positions.concat(
+          arr.map((item, index) => {
+            let temp = index + modelRef.value.offset
+            return {
+              index: temp,
+              top: lastBottom + index * visual_scroll.value.estimatedItemSize,
+              height: visual_scroll.value.estimatedItemSize,
+              bottom:
+                lastBottom + (index + 1) * visual_scroll.value.estimatedItemSize
+            }
+          })
+        )
+        control.value = true
+      }
+    }
+
+    const scrollFn = e => {
+      let scrollTop = e.target.scrollTop
+      let startIndex = visual_scroll.value.positions.find(
+        i => i && i.bottom > scrollTop
+      ).index
+
+      //获取偏移量
+      if (startIndex >= 1) {
+        visual_scroll.value.offsetY =
+          visual_scroll.value.positions[startIndex - 1].bottom
+      } else {
+        visual_scroll.value.offsetY = 0
+      }
+
+      //更新渲染数组
+      curList.value = comment.value.slice(
+        startIndex,
+        startIndex + visual_scroll.value.pageNum
+      )
+
+      //如果滚动到底，请求新数据
+      let scrollHeight = e.target.scrollHeight
+      let domHeight = document.querySelector('.outsideBox').clientHeight
+
+      if (scrollHeight - domHeight - scrollTop < 100 && control.value) {
+        control.value = false
+        modelRef.value.pageIndex = modelRef.value.pageIndex + 1
+        modelRef.value.offset = modelRef.value.pageIndex * modelRef.value.limit
+        updateComment()
+      }
+    }
+
+    onUpdated(() => {
+      let itemList = document.getElementsByClassName('comment-item')
+      for (let i = 0; i < itemList.length; i++) {
+        //根据class获取该元素对应的下标值
+        let index = Number(itemList[i].classList[1].split('item')[1])
+        //根据dom获取该元素的高度
+        let domHeight = itemList[i].offsetHeight
+        //从列表高度信息数组取出数据对比
+        let oldHeight = visual_scroll.value.positions[index].height
+        let dValue = oldHeight - domHeight
+
+        //更新列表高度信息
+        if (dValue != 0) {
+          visual_scroll.value.positions[index].bottom =
+            visual_scroll.value.positions[index].bottom - dValue
+          visual_scroll.value.positions[index].height = domHeight
+
+          for (
+            let k = index + 1;
+            k < visual_scroll.value.positions.length;
+            k++
+          ) {
+            visual_scroll.value.positions[k].top =
+              visual_scroll.value.positions[k - 1].bottom
+            visual_scroll.value.positions[k].bottom =
+              visual_scroll.value.positions[k].bottom - dValue
+          }
+        }
+      }
+    })
+
     return {
       modelRef,
+      listHeight,
       comment,
-      goBack
+      curList,
+      visual_scroll,
+      goBack,
+      scrollFn
     }
   }
 })
