@@ -166,7 +166,8 @@ export default defineComponent({
       let obj = {
         al: item.al,
         id: item.id,
-        name: item.name
+        name: item.name,
+        ar: item.ar[0]
       }
       Store.commit('updatePlayList', obj)
       document.getElementById('audio').autoplay = true
@@ -181,8 +182,8 @@ export default defineComponent({
           id: albumId.value,
           picUrl: albumDetail.value.coverImgUrl,
           name: albumDetail.value.name,
-          number:albumDetail.value.commentCount,
-          creator:albumDetail.value.creator.nickname
+          number: albumDetail.value.commentCount,
+          creator: albumDetail.value.creator.nickname
         }
       })
     }
@@ -196,7 +197,7 @@ export default defineComponent({
       changeHeaderColor,
 
       playMusic,
-      jumpToComment,
+      jumpToComment
     }
   }
 })
@@ -339,6 +340,8 @@ export default defineComponent({
         .alAndar {
           width: 6.6667rem;
           & p:nth-child(1) {
+            height: 0.4267rem;
+            line-height: 0.4267rem;
             font-size: 0.3733rem;
           }
           & p:nth-child(2) {

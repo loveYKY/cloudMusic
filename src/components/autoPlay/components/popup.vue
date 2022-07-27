@@ -43,7 +43,13 @@
         <div class="footer">
           <div class="funcList">
             <van-icon name="like-o" size="20" color="#dee1e6" />
-            <van-icon name="chat-o" badge="99+" size="20" color="#dee1e6" />
+            <van-icon
+              name="chat-o"
+              badge="99+"
+              size="20"
+              color="#dee1e6"
+              @click="jumpToComment"
+            />
             <van-icon name="wap-nav" size="20" color="#dee1e6" />
           </div>
           <div class="time">
@@ -80,6 +86,7 @@ import store from '@/store'
 import Lyric from '../components/lyric.vue'
 import { tabEvent } from '@/utils/tapEvent.js'
 import moment from 'moment'
+import { useRoute, useRouter } from 'vue-router'
 export default defineComponent({
   components: {
     Lyric
@@ -96,9 +103,10 @@ export default defineComponent({
   },
   emits: ['update:visible'],
   setup(props, context) {
+    const router = useRouter()
     const showLyric = ref(false)
     const { visible, playDetail } = toRefs(props)
-    console.log(playDetail.value)
+
     const show = computed({
       get: function () {
         return visible.value
@@ -108,6 +116,7 @@ export default defineComponent({
       }
     })
 
+    //控制是否播放
     const playControl = computed({
       get: function () {
         return store.state.playControl
@@ -118,6 +127,7 @@ export default defineComponent({
       store.commit('changeControl')
     }
 
+    //关闭遮罩层
     const closeOverlay = () => {
       show.value = false
     }
@@ -169,6 +179,20 @@ export default defineComponent({
       }
     })
 
+    const jumpToComment = () => {
+      router.push({
+        path: '/comment',
+        query: {
+          type: 'music',
+          id: playDetail.value.id,
+          picUrl: playDetail.value.al.picUrl,
+          name: playDetail.value.name,
+          creator: playDetail.value.ar.name
+        }
+      })
+      show.value = false
+    }
+
     watch(
       show,
       () => {
@@ -195,7 +219,8 @@ export default defineComponent({
       progress,
       duration,
       min_currentTime,
-      min_duration
+      min_duration,
+      jumpToComment
     }
   }
 })
