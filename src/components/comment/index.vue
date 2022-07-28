@@ -3,7 +3,11 @@
     <header class="header">
       <div class="header-left">
         <van-icon name="down" class="back" size="24" @click="goBack" />
-        <span>评论({{ modelRef.number }})</span>
+        <span
+          >评论<span v-if="modelRef.number != null"
+            >({{ modelRef.number }})</span
+          ></span
+        >
       </div>
     </header>
 
@@ -13,7 +17,7 @@
           <img :src="`${modelRef.picUrl}?param=50y50`" />
           <div class="desc">
             <p>{{ modelRef.name }}</p>
-            <p>by{{ modelRef.creator }}</p>
+            <p v-if="modelRef.creator != null">by{{ modelRef.creator }}</p>
           </div>
         </div>
         <van-icon name="arrow" />
@@ -66,8 +70,8 @@ export default defineComponent({
       type: route.query.type,
       picUrl: route.query.picUrl,
       name: route.query.name,
-      number: route.query.number,
-      creator: route.query.creator
+      number: route.query.number ? route.query.number : null,
+      creator: route.query.creator ? route.query.creator : null
     })
 
     //完整的数据数组
