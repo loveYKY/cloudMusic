@@ -1,33 +1,42 @@
 <template>
   <div class="out">
-    <van-grid :column-num="3" class="songList" :border="false">
-      <van-grid-item v-for="(item, index) in songList" :key="index" class="imageItem">
-          <van-image
-              width="2.7rem"
-              height="2.7rem"
-              radius="6px"
-              fit="contain"
-              position="top"
-              lazy-load
-              :src="`${item.coverImgUrl}?param=200y200`"
-            />
-            <div class="desc">{{ item.name.length < 13 ? item.name : item.name.slice(0,13)+"..." }}</div>
-            <div class="playCount">
-              <van-icon name="play-circle-o" />
-              <span>{{ parseInt(item.playCount/10000) }}万</span>
-            </div>
-      </van-grid-item> 
-    </van-grid>
+    <lazy-component>
+      <van-grid :column-num="3" class="songList" :border="false">
+        <van-grid-item 
+          v-for="(item, index) in songList" 
+          :key="index" 
+          class="imageItem"
+          @click="goToDetail(item.id)"
+        >
+            <van-image
+                width="2.8rem"
+                height="2.8rem"
+                radius="6px"
+                fit="contain"
+                position="top"
+                lazy-load
+                :src="`${item.coverImgUrl}?param=200y200`"
+              />
+              <div class="desc">{{ item.name.length < 13 ? item.name : item.name.slice(0,10)+"..." }}</div>
+              <div class="playCount">
+                <van-icon name="play-circle-o" />
+                <span>{{ parseInt(item.playCount/10000) }}万</span>
+              </div>
+        </van-grid-item> 
+      </van-grid>
+    </lazy-component>
   </div>
 </template>
 
 <script>
 import { computed, defineComponent, ref, watch, watchEffect } from 'vue'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import Api from '@/api/index.js'
 export default defineComponent({
     name: 'threeColumn',
     setup() {
+        const router = useRouter()
         const store = useStore()
         const tag = computed(() => store.state.tag)
         const songList = ref([])
@@ -36,9 +45,19 @@ export default defineComponent({
             songList.value = res.playlists.slice(0,50)
         }
         watchEffect(() => getSongList(tag.value))
+
+        const goToDetail = id => {
+          router.push({
+            path: '/albumSong',
+            query: {
+              id: id
+            }
+          })
+        }
         
         return {
             getSongList,
+            goToDetail,
             songList,
         }
     }
@@ -47,9 +66,10 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .out{
-  height: 500px;
+  height: 600px;
+  overflow: auto;
   .songList {
-    overflow: scroll;
+    
       .imageItem {
         position: relative;
         .playCount {
@@ -68,7 +88,7 @@ export default defineComponent({
         .desc {
           margin-top: 0.08rem;
           font-family:Arial, Helvetica, sans-serif;
-          font-size: small;
+          font-size: 15px;
           line-height: 0.3733rem;
           overflow: hidden;
           white-space: pre-wrap;
