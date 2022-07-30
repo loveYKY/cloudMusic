@@ -184,10 +184,10 @@ export default defineComponent({
         path: '/comment',
         query: {
           type: 'music',
-          id: playDetail.value.id,
-          picUrl: playDetail.value.al.picUrl,
-          name: playDetail.value.name,
-          creator: playDetail.value.ar.name
+          id: playDetail.value?.id,
+          picUrl: playDetail.value.al?.picUrl,
+          name: playDetail.value?.name,
+          creator: playDetail.value.ar?.name
         }
       })
       show.value = false

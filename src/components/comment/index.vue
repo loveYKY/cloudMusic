@@ -26,23 +26,30 @@
       <div class="comment">
         <div class="title">评论区</div>
         <div class="outsideBox" @scroll="scrollFn">
-          <div class="insideBox" :style="`height: ${listHeight}px`">
-            <div
-              class="comment-itemList"
-              :style="`transform:translateY(${visual_scroll.offsetY}px)`"
-            >
-              <template v-for="(item, index) in curList" :key="index">
-                <div class="comment-item" :class="`item${item.key}`">
-                  <img :src="`${item.user.avatarUrl}?param=30y30`" />
-                  <div class="comment-item-detail">
-                    <p class="detail-nickname">{{ item.user.nickname }}</p>
-                    <p class="detail-time">{{ item.timeStr }}</p>
-                    <p class="detail-comment">{{ item.content }}</p>
+          <van-list
+            v-model:loading="loading"
+            :finished="finished"
+            finished-text="没有更多了"
+            @load="updateComment"
+          >
+            <div class="insideBox" :style="`height: ${listHeight}px`">
+              <div
+                class="comment-itemList"
+                :style="`transform:translateY(${visual_scroll.offsetY}px)`"
+              >
+                <template v-for="(item, index) in curList" :key="index">
+                  <div class="comment-item" :class="`item${item.key}`">
+                    <img :src="`${item.user.avatarUrl}?param=30y30`" />
+                    <div class="comment-item-detail">
+                      <p class="detail-nickname">{{ item.user.nickname }}</p>
+                      <p class="detail-time">{{ item.timeStr }}</p>
+                      <p class="detail-comment">{{ item.content }}</p>
+                    </div>
                   </div>
-                </div>
-              </template>
+                </template>
+              </div>
             </div>
-          </div>
+          </van-list>
         </div>
       </div>
     </div>
@@ -50,10 +57,9 @@
 </template>
 
 <script>
-import { computed, defineComponent, onUpdated, ref } from 'vue'
+import { computed, defineComponent, onMounted, onUpdated, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Api from '@/api/index'
-import moment from 'moment'
 var _ = require('lodash')
 export default defineComponent({
   setup(props, context) {
@@ -104,7 +110,6 @@ export default defineComponent({
       }
     })
 
-    let control = ref(true)
     //请求获得评论信息
     const getComment = async () => {
       let res = await Api.getComment(
@@ -135,46 +140,6 @@ export default defineComponent({
     }
 
     getComment()
-
-    const updateComment = async () => {
-      if (modelRef.value.offset > modelRef.value.number) return
-      let res = await Api.getComment(
-        modelRef.value.type,
-        modelRef.value.id,
-        modelRef.value.limit,
-        modelRef.value.offset
-      )
-      if (res.code == 200) {
-        let arr = res.comments.map((item, index) => {
-          return {
-            ...item,
-            key: index + modelRef.value.offset
-          }
-        })
-        comment.value = comment.value.concat(arr)
-
-        let lastBottom = 0
-        if (visual_scroll.value.positions.length != 0) {
-          lastBottom =
-            visual_scroll.value.positions[
-              visual_scroll.value.positions.length - 1
-            ].bottom
-        }
-        visual_scroll.value.positions = visual_scroll.value.positions.concat(
-          arr.map((item, index) => {
-            let temp = index + modelRef.value.offset
-            return {
-              index: temp,
-              top: lastBottom + index * visual_scroll.value.estimatedItemSize,
-              height: visual_scroll.value.estimatedItemSize,
-              bottom:
-                lastBottom + (index + 1) * visual_scroll.value.estimatedItemSize
-            }
-          })
-        )
-        control.value = true
-      }
-    }
 
     //二分法查找
     const binarySearch = (list, value) => {
@@ -228,22 +193,44 @@ export default defineComponent({
         visual_scroll.value.startIndex,
         visual_scroll.value.endIndex
       )
-
-      //如果滚动到底，请求新数据
-      let scrollHeight = e.target.scrollHeight
-      let domHeight = document.querySelector('.outsideBox').clientHeight
-
-      if (scrollHeight - domHeight - scrollTop < 100 && control.value) {
-        control.value = false
-        modelRef.value.pageIndex = modelRef.value.pageIndex + 1
-        modelRef.value.offset = modelRef.value.pageIndex * modelRef.value.limit
-        updateComment()
-      }
     }, 100)
 
+    // const resizeObserver = new ResizeObserver(entries => {
+    //   for (let item of entries) {
+    //     // //根据class获取该元素对应的下标值
+    //     let index = Number(item.target.classList[1].split('item')[1])
+    //     //根据dom获取该元素的高度
+    //     let domHeight = item.contentRect.height
+    //     //从列表高度信息数组取出数据对比
+    //     let oldHeight = visual_scroll.value.positions[index].height
+    //     let dValue = oldHeight - domHeight
+
+    //     //更新列表高度信息
+    //     if (dValue != 0) {
+    //       visual_scroll.value.positions[index].bottom =
+    //         visual_scroll.value.positions[index].bottom - dValue
+    //       visual_scroll.value.positions[index].height = domHeight
+
+    //       for (
+    //         let k = index + 1;
+    //         k < visual_scroll.value.positions.length;
+    //         k++
+    //       ) {
+    //         visual_scroll.value.positions[k].top =
+    //           visual_scroll.value.positions[k - 1].bottom
+    //         visual_scroll.value.positions[k].bottom =
+    //           visual_scroll.value.positions[k].bottom - dValue
+    //       }
+    //     }
+    //   }
+    // })
+
     onUpdated(() => {
+      // resizeObserver.disconnect()
       let itemList = document.getElementsByClassName('comment-item')
       for (let i = 0; i < itemList.length; i++) {
+        // let dom = document.querySelector('.' + itemList[i].classList[1])
+        // resizeObserver.observe(dom)
         //根据class获取该元素对应的下标值
         let index = Number(itemList[i].classList[1].split('item')[1])
         //根据dom获取该元素的高度
@@ -272,6 +259,54 @@ export default defineComponent({
       }
     })
 
+    const loading = ref(false)
+    const finished = ref(false)
+
+    const updateComment = async () => {
+      modelRef.value.pageIndex = modelRef.value.pageIndex + 1
+      modelRef.value.offset = modelRef.value.pageIndex * modelRef.value.limit
+      // if (modelRef.value.offset > modelRef.value.number) {
+      //   finished.value = true
+      //   return
+      // }
+      let res = await Api.getComment(
+        modelRef.value.type,
+        modelRef.value.id,
+        modelRef.value.limit,
+        modelRef.value.offset
+      )
+      if (res.code == 200) {
+        let arr = res.comments.map((item, index) => {
+          return {
+            ...item,
+            key: index + modelRef.value.offset
+          }
+        })
+        comment.value = comment.value.concat(arr)
+
+        let lastBottom = 0
+        if (visual_scroll.value.positions.length != 0) {
+          lastBottom =
+            visual_scroll.value.positions[
+              visual_scroll.value.positions.length - 1
+            ].bottom
+        }
+        visual_scroll.value.positions = visual_scroll.value.positions.concat(
+          arr.map((item, index) => {
+            let temp = index + modelRef.value.offset
+            return {
+              index: temp,
+              top: lastBottom + index * visual_scroll.value.estimatedItemSize,
+              height: visual_scroll.value.estimatedItemSize,
+              bottom:
+                lastBottom + (index + 1) * visual_scroll.value.estimatedItemSize
+            }
+          })
+        )
+      }
+      loading.value = false
+    }
+
     return {
       modelRef,
       listHeight,
@@ -279,7 +314,10 @@ export default defineComponent({
       curList,
       visual_scroll,
       goBack,
-      scrollFn
+      scrollFn,
+      updateComment,
+      loading,
+      finished
     }
   }
 })

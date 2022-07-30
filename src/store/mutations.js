@@ -14,6 +14,18 @@ export default {
     }
     state.playControl = true
   },
+  updatePlayListAll: (state, val) => {
+    for (let i = val.length-1; i > 0; i--) {
+      let index = state.playList.findIndex(item => {
+        return item.id == val[i].id
+      })
+      if (index == -1) {
+        state.playList.unshift(val[i])
+      }
+    }
+    state.playIndex = 0
+    state.playControl = true
+  },
   changeIndex: state => {
     if (state.playIndex < state.playList.length - 1) {
       state.playIndex++

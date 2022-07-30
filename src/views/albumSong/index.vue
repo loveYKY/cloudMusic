@@ -62,7 +62,7 @@
       </van-skeleton>
 
       <van-sticky offset-top="0.8533rem">
-        <div class="playAll">
+        <div class="playAll" @click="playAll">
           <div>
             <van-icon name="play-circle" size="24" color="red" />
             <span
@@ -173,6 +173,20 @@ export default defineComponent({
       document.getElementById('audio').autoplay = true
     }
 
+    const playAll = () => {
+      let arr = []
+      arr = songList.value.map(item => {
+        return {
+          al: item.al,
+          id: item.id,
+          name: item.name,
+          ar: item.ar[0]
+        }
+      })
+      Store.commit('updatePlayListAll', arr)
+      document.getElementById('audio').autoplay = true
+    }
+
     //跳转到歌单评论区
     const jumpToComment = () => {
       router.push({
@@ -197,6 +211,7 @@ export default defineComponent({
       changeHeaderColor,
 
       playMusic,
+      playAll,
       jumpToComment
     }
   }
