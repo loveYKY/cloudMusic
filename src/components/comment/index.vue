@@ -35,7 +35,7 @@
             <div class="insideBox" :style="`height: ${listHeight}px`">
               <div
                 class="comment-itemList"
-                :style="`transform:translateY(${visual_scroll.offsetY}px)`"
+                :style="`transform:translate3d(0,${visual_scroll.offsetY}px,0)`"
               >
                 <template v-for="(item, index) in curList" :key="index">
                   <div class="comment-item" :class="`item${item.key}`">
@@ -57,7 +57,15 @@
 </template>
 
 <script>
-import { computed, defineComponent, onMounted, onUpdated, ref } from 'vue'
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  onUpdated,
+  ref,
+  nextTick,
+  watch
+} from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Api from '@/api/index'
 var _ = require('lodash')
@@ -82,16 +90,12 @@ export default defineComponent({
 
     //完整的数据数组
     const comment = ref([])
-    //渲染的数据数组,
-    const curList = ref([])
     //虚拟滚动参数
     const visual_scroll = ref({
       //可视区域偏移高度
       offsetY: 0,
-      //渲染条数
-      pageNum: 10,
-      //缓存区长度,
-      cache: 5,
+      //缓存区长度,比例,
+      cache: 1,
       //起始索引
       startIndex: 0,
       //结束索引
@@ -99,8 +103,48 @@ export default defineComponent({
       //预估高度
       estimatedItemSize: 100,
       //列表项渲染后存储每一项的高度以及位置信息
-      positions: []
+      positions: [],
+      //渲染区域高度
+      screenHeight: 0
     })
+
+    //可视渲染条数
+    const visibleCount = computed({
+      get: function () {
+        return Math.ceil(
+          visual_scroll.value.screenHeight /
+            visual_scroll.value.estimatedItemSize
+        )
+      }
+    })
+
+    //上缓存区
+    const aboveCount = computed({
+      get: function () {
+        return Math.min(
+          visual_scroll.value.startIndex,
+          visual_scroll.value.cache * visibleCount.value
+        )
+      }
+    })
+    //下缓存区
+    const belowCount = computed({
+      get: function () {
+        return Math.min(
+          comment.value.length - visual_scroll.value.endIndex,
+          visual_scroll.value.cache * visibleCount.value
+        )
+      }
+    })
+    //当前渲染数据
+    const curList = computed({
+      get: function () {
+        let start = visual_scroll.value.startIndex - aboveCount.value
+        let end = visual_scroll.value.endIndex + belowCount.value
+        return comment.value.slice(start, end)
+      }
+    })
+
     const listHeight = computed({
       get: function () {
         if (visual_scroll.value.positions.length == 0) return 0
@@ -108,6 +152,14 @@ export default defineComponent({
           visual_scroll.value.positions.length - 1
         ].bottom
       }
+    })
+
+    onMounted(() => {
+      visual_scroll.value.screenHeight =
+        document.querySelector('.outsideBox').clientHeight
+      visual_scroll.value.startIndex = 0
+      visual_scroll.value.endIndex =
+        visual_scroll.value.startIndex + visibleCount.value
     })
 
     //请求获得评论信息
@@ -134,8 +186,6 @@ export default defineComponent({
             bottom: (index + 1) * visual_scroll.value.estimatedItemSize
           }
         })
-
-        curList.value = comment.value.slice(0, visual_scroll.value.pageNum)
       }
     }
 
@@ -163,74 +213,48 @@ export default defineComponent({
       return tempIndex
     }
 
-    const scrollFn = _.throttle(e => {
-      let scrollTop = e.target.scrollTop
+    //获取索引
+    const getIndex = scrollTop => {
+      return binarySearch(visual_scroll.value.positions, scrollTop)
+    }
 
-      //获取新的起始索引
-      visual_scroll.value.startIndex = Math.max(
-        0,
-        binarySearch(visual_scroll.value.positions, scrollTop) -
-          visual_scroll.value.cache
-      )
-      //获取新的终止索引
-      visual_scroll.value.endIndex =
-        visual_scroll.value.startIndex +
-        visual_scroll.value.pageNum +
-        visual_scroll.value.cache
-
+    //获取当前偏移量
+    const setStartOffset = () => {
       //获取偏移量
       if (visual_scroll.value.startIndex >= 1) {
+        let size =
+          visual_scroll.value.positions[visual_scroll.value.startIndex].top -
+          (visual_scroll.value.positions[
+            visual_scroll.value.startIndex - aboveCount.value
+          ]
+            ? visual_scroll.value.positions[
+                visual_scroll.value.startIndex - aboveCount.value
+              ].top
+            : 0)
+
         visual_scroll.value.offsetY =
-          visual_scroll.value.positions[
-            visual_scroll.value.startIndex - 1
-          ].bottom
+          visual_scroll.value.positions[visual_scroll.value.startIndex - 1]
+            .bottom - size
       } else {
         visual_scroll.value.offsetY = 0
       }
+    }
 
-      //更新渲染数组
-      curList.value = comment.value.slice(
-        visual_scroll.value.startIndex,
-        visual_scroll.value.endIndex
-      )
+    //滚动事件
+    const scrollFn = _.throttle(e => {
+      let scrollTop = e.target.scrollTop
+
+      visual_scroll.value.startIndex = getIndex(scrollTop)
+      visual_scroll.value.endIndex =
+        visual_scroll.value.startIndex + visibleCount.value
+
+      setStartOffset()
     }, 100)
 
-    // const resizeObserver = new ResizeObserver(entries => {
-    //   for (let item of entries) {
-    //     // //根据class获取该元素对应的下标值
-    //     let index = Number(item.target.classList[1].split('item')[1])
-    //     //根据dom获取该元素的高度
-    //     let domHeight = item.contentRect.height
-    //     //从列表高度信息数组取出数据对比
-    //     let oldHeight = visual_scroll.value.positions[index].height
-    //     let dValue = oldHeight - domHeight
-
-    //     //更新列表高度信息
-    //     if (dValue != 0) {
-    //       visual_scroll.value.positions[index].bottom =
-    //         visual_scroll.value.positions[index].bottom - dValue
-    //       visual_scroll.value.positions[index].height = domHeight
-
-    //       for (
-    //         let k = index + 1;
-    //         k < visual_scroll.value.positions.length;
-    //         k++
-    //       ) {
-    //         visual_scroll.value.positions[k].top =
-    //           visual_scroll.value.positions[k - 1].bottom
-    //         visual_scroll.value.positions[k].bottom =
-    //           visual_scroll.value.positions[k].bottom - dValue
-    //       }
-    //     }
-    //   }
-    // })
-
-    onUpdated(() => {
-      // resizeObserver.disconnect()
+    watch(curList, () => {
       let itemList = document.getElementsByClassName('comment-item')
+      if (itemList.length == 0) return
       for (let i = 0; i < itemList.length; i++) {
-        // let dom = document.querySelector('.' + itemList[i].classList[1])
-        // resizeObserver.observe(dom)
         //根据class获取该元素对应的下标值
         let index = Number(itemList[i].classList[1].split('item')[1])
         //根据dom获取该元素的高度
@@ -257,6 +281,7 @@ export default defineComponent({
           }
         }
       }
+      setStartOffset()
     })
 
     const loading = ref(false)
@@ -265,10 +290,7 @@ export default defineComponent({
     const updateComment = async () => {
       modelRef.value.pageIndex = modelRef.value.pageIndex + 1
       modelRef.value.offset = modelRef.value.pageIndex * modelRef.value.limit
-      // if (modelRef.value.offset > modelRef.value.number) {
-      //   finished.value = true
-      //   return
-      // }
+
       let res = await Api.getComment(
         modelRef.value.type,
         modelRef.value.id,
