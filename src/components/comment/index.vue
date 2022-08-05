@@ -95,7 +95,7 @@ export default defineComponent({
       //可视区域偏移高度
       offsetY: 0,
       //缓存区长度,比例,
-      cache: 1,
+      cache: 2,
       //起始索引
       startIndex: 0,
       //结束索引
@@ -258,7 +258,8 @@ export default defineComponent({
         //根据class获取该元素对应的下标值
         let index = Number(itemList[i].classList[1].split('item')[1])
         //根据dom获取该元素的高度
-        let domHeight = itemList[i].offsetHeight
+        let rect = itemList[i].getBoundingClientRect()
+        let domHeight = rect.height
         //从列表高度信息数组取出数据对比
         let oldHeight = visual_scroll.value.positions[index].height
         let dValue = oldHeight - domHeight
@@ -416,8 +417,7 @@ export default defineComponent({
         .comment-item {
           display: flex;
           justify-content: flex-start;
-          margin-top: 0.32rem;
-
+          padding-top: .32rem;
           img {
             height: 0.8rem;
             width: 0.8rem;
