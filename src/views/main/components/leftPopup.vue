@@ -76,6 +76,12 @@
           </van-cell>
         </van-cell-group>
 
+        <van-cell-group inset class="cell-last">
+          <van-cell >
+            <span class="word-last">退出登录</span>
+          </van-cell>
+        </van-cell-group>
+
     </div>
   </van-popup>
 </template>
@@ -119,12 +125,22 @@ export default defineComponent({
         color: rgba(0,0,0,0.4);
         font-size: 3px;
       }
+      
       .word {
         padding-left: 0.2rem;
       }
       .arrow {
         float: right;
         color: rgba(0,0,0,0.3);
+      }
+    }
+    .cell-last {
+      margin: 0.5rem;
+      margin-bottom: 2rem;
+      .word-last {
+        color: red;
+        margin-left: 36%;
+        font-size: 15px;
       }
     }
 }
