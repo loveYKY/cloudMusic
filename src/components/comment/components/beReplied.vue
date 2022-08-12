@@ -5,7 +5,7 @@
     :style="{ height: '80%' }"
     class="reply-container"
   >
-    <header class="header">
+    <header class="reply-container-header">
       <div class="header-left">
         <van-icon name="down" class="back" size="20" @click="show = false" />
         <div
@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import { computed, defineComponent, ref, toRefs } from 'vue'
+import { computed, defineComponent, onMounted, onUpdated, ref, toRefs, watch } from 'vue'
 
 export default defineComponent({
   props: {
@@ -74,6 +74,15 @@ export default defineComponent({
       }
     })
 
+    onUpdated(() => {
+      let allHeight = document.querySelector('.reply-container')?.clientHeight
+      let headerHeight = document.querySelector(
+        '.reply-container-header'
+      )?.clientHeight
+      document.querySelector('.reply-comment').style.height =
+        allHeight - headerHeight - 36 + 'px'
+    })
+
     return {
       show,
       replyDetail
@@ -85,7 +94,7 @@ export default defineComponent({
 <style lang="scss">
 .reply-container {
   border-radius: 12px 12px 0px 0px;
-  .header {
+  .reply-container-header {
     background-color: #fff;
     box-sizing: border-box;
     width: 100%;
@@ -109,6 +118,7 @@ export default defineComponent({
   }
 
   .reply-comment {
+    overflow: auto;
     .main-comment-item {
       display: flex;
       justify-content: flex-start;
