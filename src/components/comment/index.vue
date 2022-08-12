@@ -183,35 +183,6 @@ export default defineComponent({
         visual_scroll.value.startIndex + visibleCount.value
     })
 
-    //请求获得评论信息
-    const getComment = async () => {
-      let res = await Api.getComment(
-        modelRef.value.type,
-        modelRef.value.id,
-        modelRef.value.limit,
-        modelRef.value.offset
-      )
-      if (res.code == 200) {
-        comment.value = res.comments.map((item, index) => {
-          return {
-            ...item,
-            key: index
-          }
-        })
-
-        visual_scroll.value.positions = comment.value.map((item, index) => {
-          return {
-            index: index,
-            top: index * visual_scroll.value.estimatedItemSize,
-            height: visual_scroll.value.estimatedItemSize,
-            bottom: (index + 1) * visual_scroll.value.estimatedItemSize
-          }
-        })
-      }
-    }
-
-    getComment()
-
     //二分法查找
     const binarySearch = (list, value) => {
       let start = 0
@@ -272,47 +243,50 @@ export default defineComponent({
       setStartOffset()
     }, 100)
 
-    watch(curList, () => {
-      let itemList = document.getElementsByClassName('comment-item')
-      if (itemList.length == 0) return
-      for (let i = 0; i < itemList.length; i++) {
-        //根据class获取该元素对应的下标值
-        let index = Number(itemList[i]?.classList[1]?.split('item')[1])
-        //根据dom获取该元素的高度
-        let rect = itemList[i]?.getBoundingClientRect()
-        let domHeight = rect.height
-        //从列表高度信息数组取出数据对比
-        let oldHeight = visual_scroll.value.positions[index]?.height
-        let dValue = oldHeight - domHeight
+    watch(
+      curList,
+      () => {
+        let itemList = document.getElementsByClassName('comment-item')
+        if (itemList.length == 0) return
+        for (let i = 0; i < itemList.length; i++) {
+          //根据class获取该元素对应的下标值
+          let index = Number(itemList[i]?.classList[1]?.split('item')[1])
+          //根据dom获取该元素的高度
+          let rect = itemList[i]?.getBoundingClientRect()
+          let domHeight = rect.height
+          //从列表高度信息数组取出数据对比
+          let oldHeight = visual_scroll.value.positions[index]?.height
+          let dValue = oldHeight - domHeight
 
-        //更新列表高度信息
-        if (dValue != 0) {
-          visual_scroll.value.positions[index].bottom =
-            visual_scroll.value.positions[index].bottom - dValue
-          visual_scroll.value.positions[index].height = domHeight
+          //更新列表高度信息
+          if (dValue != 0) {
+            visual_scroll.value.positions[index].bottom =
+              visual_scroll.value.positions[index].bottom - dValue
+            visual_scroll.value.positions[index].height = domHeight
 
-          for (
-            let k = index + 1;
-            k < visual_scroll.value.positions.length;
-            k++
-          ) {
-            visual_scroll.value.positions[k].top =
-              visual_scroll.value.positions[k - 1].bottom
-            visual_scroll.value.positions[k].bottom =
-              visual_scroll.value.positions[k].bottom - dValue
+            for (
+              let k = index + 1;
+              k < visual_scroll.value.positions.length;
+              k++
+            ) {
+              visual_scroll.value.positions[k].top =
+                visual_scroll.value.positions[k - 1].bottom
+              visual_scroll.value.positions[k].bottom =
+                visual_scroll.value.positions[k].bottom - dValue
+            }
           }
         }
+        setStartOffset()
+      },
+      {
+        immediate: false
       }
-      setStartOffset()
-    })
+    )
 
     const loading = ref(false)
     const finished = ref(false)
 
     const updateComment = async () => {
-      modelRef.value.pageIndex = modelRef.value.pageIndex + 1
-      modelRef.value.offset = modelRef.value.pageIndex * modelRef.value.limit
-
       let res = await Api.getComment(
         modelRef.value.type,
         modelRef.value.id,
@@ -349,6 +323,8 @@ export default defineComponent({
         )
       }
       loading.value = false
+      modelRef.value.pageIndex = modelRef.value.pageIndex + 1
+      modelRef.value.offset = modelRef.value.pageIndex * modelRef.value.limit
     }
 
     //回复弹窗
