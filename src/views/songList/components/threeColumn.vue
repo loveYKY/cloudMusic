@@ -1,31 +1,34 @@
 <template>
-  <div class="out">
-    <lazy-component>
-      <van-grid :column-num="3" class="songList" :border="false">
-        <van-grid-item 
-          v-for="(item, index) in songList" 
-          :key="index" 
-          class="imageItem"
-          @click="goToDetail(item.id)"
-        >
-            <van-image
-                width="2.8rem"
-                height="2.8rem"
-                radius="6px"
-                fit="contain"
-                position="top"
-                lazy-load
-                :src="`${item.coverImgUrl}?param=200y200`"
-              />
-              <div class="desc">{{ item.name.length < 13 ? item.name : item.name.slice(0,10)+"..." }}</div>
-              <div class="playCount">
-                <van-icon name="play-circle-o" />
-                <span>{{ parseInt(item.playCount/10000) }}万</span>
-              </div>
-        </van-grid-item> 
-      </van-grid>
-    </lazy-component>
-  </div>
+    <div class="out" v-if="!loading">
+      <lazy-component>
+        <van-grid :column-num="3" class="songList" :border="false">
+          <van-grid-item 
+            v-for="(item, index) in songList" 
+            :key="index" 
+            class="imageItem"
+            @click="goToDetail(item.id)"
+          >
+              <van-image
+                  width="2.8rem"
+                  height="2.8rem"
+                  radius="6px"
+                  fit="contain"
+                  position="top"
+                  lazy-load
+                  :src="`${item.coverImgUrl}?param=200y200`"
+                />
+                <div class="desc">{{ item.name.length < 13 ? item.name : item.name.slice(0,10)+"..." }}</div>
+                <div class="playCount">
+                  <van-icon name="play-circle-o" />
+                  <span>{{ parseInt(item.playCount/10000) }}万</span>
+                </div>
+          </van-grid-item> 
+        </van-grid>
+      </lazy-component>
+    </div>
+    <div class="out2" v-else>
+      <van-loading size="44px" vertical>加载中...</van-loading>
+    </div>
 </template>
 
 <script>
@@ -40,9 +43,12 @@ export default defineComponent({
         const store = useStore()
         const tag = computed(() => store.state.tag)
         const songList = ref([])
+        const loading = ref(true)
         const getSongList = async (tag) => {
+            loading.value = true
             let res = await Api.getSongList(tag)
             songList.value = res.playlists.slice(0,50)
+            loading.value = false
         }
         watchEffect(() => getSongList(tag.value))
 
@@ -59,6 +65,7 @@ export default defineComponent({
             getSongList,
             goToDetail,
             songList,
+            loading,
         }
     }
 })
@@ -97,5 +104,8 @@ export default defineComponent({
         }
       }
     }
+}
+.out2 {
+  margin-top: 40%;
 }
 </style>
