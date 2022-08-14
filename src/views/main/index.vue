@@ -71,6 +71,7 @@ export default defineComponent({
 
     //游客登陆
     const getAnonimousCookie = async () => {
+      if (Cookie.get('cookie')) return
       let res = await Api.getAnonimousCookie()
 
       if (res.code == 200) {

@@ -44,6 +44,14 @@
                       <p class="detail-nickname">{{ item.user.nickname }}</p>
                       <p class="detail-time">{{ item.timeStr }}</p>
                       <p class="detail-comment">{{ item.content }}</p>
+                      <p
+                        class="detail-reply"
+                        v-show="item.beReplied.length != 0"
+                      >
+                        <span @click="showReplyFn(item)"
+                          >{{ item.beReplied.length }}条回复</span
+                        >
+                      </p>
                     </div>
                   </div>
                 </template>
@@ -54,6 +62,10 @@
       </div>
     </div>
   </div>
+  <BeReplied
+    v-model:showReply="showReply"
+    :replyDetail="replyDetail"
+  ></BeReplied>
 </template>
 
 <script>
@@ -69,7 +81,11 @@ import {
 import { useRoute, useRouter } from 'vue-router'
 import Api from '@/api/index'
 var _ = require('lodash')
+import BeReplied from './components/beReplied.vue'
 export default defineComponent({
+  components: {
+    BeReplied
+  },
   setup(props, context) {
     const route = useRoute()
     const goBack = () => {
@@ -81,10 +97,15 @@ export default defineComponent({
       offset: 0,
       limit: 100,
       id: route.query.id,
+      //评论类型
       type: route.query.type,
+      //图片
       picUrl: route.query.picUrl,
+      //名字(歌曲、歌单)
       name: route.query.name,
+      //评论数量
       number: route.query.number ? route.query.number : null,
+      //创造者
       creator: route.query.creator ? route.query.creator : null
     })
 
@@ -162,35 +183,6 @@ export default defineComponent({
         visual_scroll.value.startIndex + visibleCount.value
     })
 
-    //请求获得评论信息
-    const getComment = async () => {
-      let res = await Api.getComment(
-        modelRef.value.type,
-        modelRef.value.id,
-        modelRef.value.limit,
-        modelRef.value.offset
-      )
-      if (res.code == 200) {
-        comment.value = res.comments.map((item, index) => {
-          return {
-            ...item,
-            key: index
-          }
-        })
-
-        visual_scroll.value.positions = comment.value.map((item, index) => {
-          return {
-            index: index,
-            top: index * visual_scroll.value.estimatedItemSize,
-            height: visual_scroll.value.estimatedItemSize,
-            bottom: (index + 1) * visual_scroll.value.estimatedItemSize
-          }
-        })
-      }
-    }
-
-    getComment()
-
     //二分法查找
     const binarySearch = (list, value) => {
       let start = 0
@@ -251,47 +243,50 @@ export default defineComponent({
       setStartOffset()
     }, 100)
 
-    watch(curList, () => {
-      let itemList = document.getElementsByClassName('comment-item')
-      if (itemList.length == 0) return
-      for (let i = 0; i < itemList.length; i++) {
-        //根据class获取该元素对应的下标值
-        let index = Number(itemList[i].classList[1].split('item')[1])
-        //根据dom获取该元素的高度
-        let rect = itemList[i].getBoundingClientRect()
-        let domHeight = rect.height
-        //从列表高度信息数组取出数据对比
-        let oldHeight = visual_scroll.value.positions[index].height
-        let dValue = oldHeight - domHeight
+    watch(
+      curList,
+      () => {
+        let itemList = document.getElementsByClassName('comment-item')
+        if (itemList.length == 0) return
+        for (let i = 0; i < itemList.length; i++) {
+          //根据class获取该元素对应的下标值
+          let index = Number(itemList[i]?.classList[1]?.split('item')[1])
+          //根据dom获取该元素的高度
+          let rect = itemList[i]?.getBoundingClientRect()
+          let domHeight = rect.height
+          //从列表高度信息数组取出数据对比
+          let oldHeight = visual_scroll.value.positions[index]?.height
+          let dValue = oldHeight - domHeight
 
-        //更新列表高度信息
-        if (dValue != 0) {
-          visual_scroll.value.positions[index].bottom =
-            visual_scroll.value.positions[index].bottom - dValue
-          visual_scroll.value.positions[index].height = domHeight
+          //更新列表高度信息
+          if (dValue != 0) {
+            visual_scroll.value.positions[index].bottom =
+              visual_scroll.value.positions[index].bottom - dValue
+            visual_scroll.value.positions[index].height = domHeight
 
-          for (
-            let k = index + 1;
-            k < visual_scroll.value.positions.length;
-            k++
-          ) {
-            visual_scroll.value.positions[k].top =
-              visual_scroll.value.positions[k - 1].bottom
-            visual_scroll.value.positions[k].bottom =
-              visual_scroll.value.positions[k].bottom - dValue
+            for (
+              let k = index + 1;
+              k < visual_scroll.value.positions.length;
+              k++
+            ) {
+              visual_scroll.value.positions[k].top =
+                visual_scroll.value.positions[k - 1].bottom
+              visual_scroll.value.positions[k].bottom =
+                visual_scroll.value.positions[k].bottom - dValue
+            }
           }
         }
+        setStartOffset()
+      },
+      {
+        immediate: false
       }
-      setStartOffset()
-    })
+    )
 
     const loading = ref(false)
     const finished = ref(false)
 
     const updateComment = async () => {
-      modelRef.value.pageIndex = modelRef.value.pageIndex + 1
-      modelRef.value.offset = modelRef.value.pageIndex * modelRef.value.limit
-
       let res = await Api.getComment(
         modelRef.value.type,
         modelRef.value.id,
@@ -328,6 +323,18 @@ export default defineComponent({
         )
       }
       loading.value = false
+      modelRef.value.pageIndex = modelRef.value.pageIndex + 1
+      modelRef.value.offset = modelRef.value.pageIndex * modelRef.value.limit
+    }
+
+    //回复弹窗
+    const showReply = ref(false)
+
+    const replyDetail = ref(null)
+
+    const showReplyFn = item => {
+      replyDetail.value = item
+      showReply.value = true
     }
 
     return {
@@ -340,7 +347,11 @@ export default defineComponent({
       scrollFn,
       updateComment,
       loading,
-      finished
+      finished,
+
+      showReply,
+      showReplyFn,
+      replyDetail
     }
   }
 })
@@ -417,7 +428,7 @@ export default defineComponent({
         .comment-item {
           display: flex;
           justify-content: flex-start;
-          padding-top: .32rem;
+          padding-top: 0.32rem;
           img {
             height: 0.8rem;
             width: 0.8rem;
@@ -438,7 +449,17 @@ export default defineComponent({
             .detail-comment {
               margin: 0.32rem 0 0.2133rem 0;
               font-family: Verdana, Geneva, Tahoma, sans-serif;
-              font-size: 13px;
+              font-size: 14px;
+              line-height: 20px;
+            }
+            .detail-reply {
+              margin: 0.32rem 0 0.2133rem 0;
+              font-family: Verdana, Geneva, Tahoma, sans-serif;
+              font-size: 12px;
+              color: #4d88ff;
+              & span:active {
+                background-color: rgb(200, 196, 196);
+              }
             }
           }
         }

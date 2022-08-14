@@ -18,7 +18,7 @@ const http = Axios.create({
  * 若存在token时，附带到Authorization请求头中，用于校验用户登录态
  */
 http.interceptors.request.use(async config => {
-  let token
+  let token = null
   const headers = token
     ? {
         ...config.headers,
