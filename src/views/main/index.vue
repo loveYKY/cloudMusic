@@ -5,6 +5,7 @@
       v-model="loading"
       @refresh="onRefresh"
       success-text="刷新成功"
+      :disabled="refreshDisabled"
     >
       <div class="block-list" :style="{ height: blockListHeight }">
         <div style="minheight: 800px">
@@ -25,7 +26,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, computed, onMounted, provide } from 'vue'
+import { defineComponent, ref, computed, onMounted, provide, watch } from 'vue'
 import MainHeader from './components/mainHeader.vue'
 import Swiper from './components/swiper.vue'
 import RecommendSongList from './components/recommendSongList.vue'
@@ -46,8 +47,27 @@ export default defineComponent({
     const headerHeight = ref(32)
     const visible = ref(false)
 
+    const refreshDisabled = ref(true)
+    const scrollTop = ref(0)
+
     onMounted(() => {
       clientHeight.value = document.querySelector('body').clientHeight
+
+      document.querySelector('.block-list').addEventListener(
+        'scroll',
+        e => {
+          scrollTop.value = e.target.scrollTop
+        },
+        false
+      )
+    })
+
+    watch(scrollTop, cur => {
+      if (cur == 0) {
+        refreshDisabled.value = false
+      } else {
+        refreshDisabled.value = true
+      }
     })
     const blockListHeight = computed({
       get: function () {
@@ -85,6 +105,7 @@ export default defineComponent({
 
     return {
       blockListHeight,
+      refreshDisabled,
       loading,
       visible,
       onRefresh

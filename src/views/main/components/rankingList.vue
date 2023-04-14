@@ -17,7 +17,7 @@
             <div class="content">
               <img v-lazy="`${item.coverImgUrl}?param=200y200`" />
               <div class="desc">
-                {{ item.description.slice(0, 100) + '...' }}
+                {{ item.description?.slice(0, 100) + '...' }}
               </div>
             </div>
           </div>
