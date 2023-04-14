@@ -98,7 +98,7 @@ export default defineComponent({
   ul {
     display: flex;
     align-items: center;
-    font-size: 0.1042rem;
+    font-size: .32rem;
     li {
       margin-right: 0.3125rem;
     }
@@ -107,7 +107,7 @@ export default defineComponent({
     }
     .active {
       font-weight: bolder;
-      font-size: 0.4rem;
+      font-size: .48rem;
     }
   }
 }
