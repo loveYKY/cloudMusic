@@ -108,7 +108,7 @@ export default defineComponent({
       display: none;
     }
     & > div {
-      margin-bottom: 100px;
+      margin-bottom: 2.6667rem;
       .block-one {
         padding: 0 0.3rem;
         background-color: #fff;
