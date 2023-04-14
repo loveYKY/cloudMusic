@@ -7,8 +7,8 @@
       success-text="刷新成功"
       :disabled="refreshDisabled"
     >
-      <div class="block-list" :style="{ height: blockListHeight }">
-        <div style="minheight: 800px">
+      <div class="block-list">
+        <div>
           <div class="block-one">
             <Swiper></Swiper>
             <RecommendSongList></RecommendSongList>
@@ -43,7 +43,6 @@ export default defineComponent({
     AlbumList
   },
   setup() {
-    const clientHeight = ref(0)
     const headerHeight = ref(32)
     const visible = ref(false)
 
@@ -51,8 +50,6 @@ export default defineComponent({
     const scrollTop = ref(0)
 
     onMounted(() => {
-      clientHeight.value = document.querySelector('body').clientHeight
-
       document.querySelector('.block-list').addEventListener(
         'scroll',
         e => {
@@ -69,18 +66,6 @@ export default defineComponent({
         refreshDisabled.value = true
       }
     })
-    const blockListHeight = computed({
-      get: function () {
-        return clientHeight.value - headerHeight.value - 40 + 'px'
-      }
-    })
-    window.addEventListener(
-      'resize',
-      () => {
-        clientHeight.value = document.querySelector('body').clientHeight
-      },
-      false
-    )
 
     const loading = ref(false)
     const onRefresh = () => {
@@ -104,7 +89,6 @@ export default defineComponent({
     provide('refresh', loading)
 
     return {
-      blockListHeight,
       refreshDisabled,
       loading,
       visible,
@@ -118,27 +102,31 @@ export default defineComponent({
 .main-container {
   .block-list {
     overflow: auto;
+    height: 100vh;
     background-color: rgb(245 242 242);
     &::-webkit-scrollbar {
       display: none;
     }
-    .block-one {
-      padding: 0 0.3rem;
-      background-color: #fff;
-      border-radius: 0px 0px 12px 12px;
-    }
-    .block-two {
-      margin-top: 0.16rem;
-      padding: 0 0.3rem;
-      background-color: #fff;
-      border-radius: 12px;
-    }
-    .block-three {
-      margin-top: 0.16rem;
-      padding: 0 0.3rem;
-      background-color: #fff;
-      border-radius: 12px;
-      margin-bottom: 0.32rem;
+    & > div {
+      margin-bottom: 100px;
+      .block-one {
+        padding: 0 0.3rem;
+        background-color: #fff;
+        border-radius: 0px 0px 12px 12px;
+      }
+      .block-two {
+        margin-top: 0.16rem;
+        padding: 0 0.3rem;
+        background-color: #fff;
+        border-radius: 12px;
+      }
+      .block-three {
+        margin-top: 0.16rem;
+        padding: 0 0.3rem;
+        background-color: #fff;
+        border-radius: 12px;
+        margin-bottom: 0.32rem;
+      }
     }
   }
 }
