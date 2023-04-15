@@ -46,11 +46,10 @@
         de.webkitCancelFullScreen()
       }
     }
-    document.body.addEventListener(
-      'click',
-      function () {
+    document.addEventListener(
+      'load',
+      () => {
         requestFullScreen()
-        //exitFullscreen();
       },
       false
     )
