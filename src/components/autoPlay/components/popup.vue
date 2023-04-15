@@ -287,13 +287,13 @@ export default defineComponent({
       width: 5.3333rem;
       background-repeat: no-repeat;
       background-size: 100%;
-      .play-circle {
-        color: #fff;
-        position: absolute;
-        transform: translate(-50%, -50%);
-        left: 50%;
-        top: 50%;
-      }
+      // .play-circle {
+      //   color: #fff;
+      //   position: absolute;
+      //   transform: translate(-50%, -50%);
+      //   left: 50%;
+      //   top: 50%;
+      // }
       img {
         position: absolute;
         z-index: -1;
