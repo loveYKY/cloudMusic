@@ -10,7 +10,7 @@
         >{{ item.name }}</li
       >
     </ul>
-    <van-icon name="search" size="20" />
+    <van-icon name="search" size="20" @click="handleSearch"/>
 
     <LeftPopupVue v-model:visible="showLeftPopup" teleport="body"></LeftPopupVue>
   </div>
@@ -51,6 +51,10 @@ export default defineComponent({
 
     const activeKey = ref(null)
 
+    const handleSearch = ()=> {
+      alert('待开发')
+    }
+
     watch(
       route,
       cur => {
@@ -82,7 +86,8 @@ export default defineComponent({
       activeKey,
       jump,
       showLeftPopup,
-      showPopup
+      showPopup,
+      handleSearch
     }
   }
 })
