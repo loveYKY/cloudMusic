@@ -31,7 +31,7 @@
     id="audio"
     v-show="true"
     @ended="ended"
-    :src="` https://music.163.com/song/media/outer/url?id=${playList[playIndex].id}.mp3?param=200y200`"
+    :src="` https://music.163.com/song/media/outer/url?id=${playList[playIndex].id}.mp3`"
     @timeupdate="timeupdate"
   ></audio>
 
