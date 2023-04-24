@@ -13,21 +13,19 @@
         class="imageItem"
         @click="goToDetail(item.id)"
       >
-        <template v-if="scrollLeft + clientWidth > item.leftBorder">
-          <van-image
-            width="2.7rem"
-            height="2.7rem"
-            radius="6px"
-            fit="contain"
-            lazy-load
-            :src="`${item.picUrl}?param=200y200`"
-          />
-          <div class="desc van-multi-ellipsis--l3">{{ item.name }}</div>
-          <div class="playCount">
-            <van-icon name="play-circle-o" />
-            <span>{{ item.playCount }}万</span>
-          </div>
-        </template>
+        <van-image
+          width="2.7rem"
+          height="2.7rem"
+          radius="6px"
+          fit="contain"
+          lazy-load
+          :src="`${item.picUrl}?param=100y100`"
+        />
+        <div class="desc van-multi-ellipsis--l3">{{ item.name }}</div>
+        <div class="playCount">
+          <van-icon name="play-circle-o" />
+          <span>{{ item.playCount }}万</span>
+        </div>
       </div>
     </div>
   </div>
@@ -63,21 +61,6 @@ export default defineComponent({
     }
     getRecommendSongList()
 
-    //懒加载实现
-    const clientWidth = ref(0)
-    //图片宽度
-    onMounted(() => {
-      clientWidth.value = document.querySelector(
-        '.lateralLazyLoading-container'
-      ).clientWidth
-    })
-    const scrollLeft = ref(0)
-    //获取横向滚动条进度
-    const fn = e => {
-      scrollLeft.value = e.target.scrollLeft
-    }
-    const getScrollLeft = _.throttle(fn, 100)
-
     //监听刷新
     const refresh = inject('refresh')
     watch(refresh, () => {
@@ -110,9 +93,6 @@ export default defineComponent({
     }
     return {
       songList,
-      getScrollLeft,
-      scrollLeft,
-      clientWidth,
       toSongList,
 
       goToDetail

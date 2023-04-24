@@ -1,7 +1,12 @@
 <template>
   <div class="autoPlay-container" @click="changeVisible">
     <div class="container-left">
-      <img :src="playList[playIndex].al.picUrl" class="alPic" />
+      <div class="alPic_container">
+        <img
+          :src="`${playList[playIndex].al.picUrl}?param=60y60`"
+          class="alPic"
+        />
+      </div>
       <p class="alName van-ellipsis">{{ playList[playIndex].name }}</p>
     </div>
     <div>
@@ -26,14 +31,11 @@
     id="audio"
     v-show="true"
     @ended="ended"
-    :src="` https://music.163.com/song/media/outer/url?id=${playList[playIndex].id}.mp3`"
+    :src="` https://music.163.com/song/media/outer/url?id=${playList[playIndex].id}.mp3?param=200y200`"
     @timeupdate="timeupdate"
   ></audio>
 
-  <Popup
-    v-model:visible="visible"
-    :playDetail="playList[playIndex]"
-  ></Popup>
+  <Popup v-model:visible="visible" :playDetail="playList[playIndex]"></Popup>
 </template>
 
 <script>
@@ -116,12 +118,16 @@ export default defineComponent({
   .container-left {
     margin-left: 0.32rem;
     position: relative;
-    .alPic {
+    .alPic_container {
       position: absolute;
       top: -0.32rem;
       height: 0.8rem;
       width: 0.8rem;
-      border-radius: 0.7467rem;
+      border-radius: 0.8rem;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .alName {
       width: 5rem;

@@ -7,25 +7,23 @@
       /></van-button>
     </header>
 
-    <div class="albumList" @scroll="getScrollLeft">
+    <div class="albumList">
       <div v-for="(item, index) in albumList" :key="index" class="block">
-        <template v-if="scrollLeft + clientWidth > item.leftBorder">
-          <div
-            v-for="(childItem, childIndex) in item.data"
-            :key="childIndex"
-            class="blockItem"
-          >
-            <img v-lazy="`${childItem.coverUrl}?param=75y75`" />
-            <div>
-              <p>{{
-                childItem.albumName.length > 20
-                  ? childItem.albumName.slice(0, 20) + '...'
-                  : childItem.albumName
-              }}</p>
-              <p>{{ childItem.artistName }}</p>
-            </div>
+        <div
+          v-for="(childItem, childIndex) in item.data"
+          :key="childIndex"
+          class="blockItem"
+        >
+          <img v-lazy="`${childItem.coverUrl}?param=75y75`" />
+          <div>
+            <p>{{
+              childItem.albumName.length > 20
+                ? childItem.albumName.slice(0, 20) + '...'
+                : childItem.albumName
+            }}</p>
+            <p>{{ childItem.artistName }}</p>
           </div>
-        </template>
+        </div>
       </div>
     </div>
   </div>
@@ -57,24 +55,8 @@ export default defineComponent({
 
     getAlbumList()
 
-    //懒加载实现
-    const clientWidth = ref(0)
-    //图片宽度
-    onMounted(() => {
-      clientWidth.value = document.querySelector('.album-container').clientWidth
-    })
-    const scrollLeft = ref(0)
-    //获取横向滚动条进度
-    const fn = e => {
-      scrollLeft.value = e.target.scrollLeft
-    }
-    const getScrollLeft = _.throttle(fn, 100)
-
     return {
-      albumList,
-      getScrollLeft,
-      scrollLeft,
-      clientWidth
+      albumList
     }
   }
 })

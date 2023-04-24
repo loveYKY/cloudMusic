@@ -8,20 +8,18 @@
     </header>
     <div class="rankList" @scroll="getScrollLeft">
       <div v-for="(item, index) in rankList" :key="index" class="imageItem">
-        <template v-if="scrollLeft + clientWidth > item.leftBorder">
-          <div class="itemBlock">
-            <div class="name">
-              {{ item.name }}
-              <van-icon name="arrow" />
-            </div>
-            <div class="content">
-              <img v-lazy="`${item.coverImgUrl}?param=200y200`" />
-              <div class="desc">
-                {{ item.description?.slice(0, 100) + '...' }}
-              </div>
+        <div class="itemBlock">
+          <div class="name">
+            {{ item.name }}
+            <van-icon name="arrow" />
+          </div>
+          <div class="content">
+            <img v-lazy="`${item.coverImgUrl}?param=200y200`" />
+            <div class="desc">
+              {{ item.description?.slice(0, 100) + '...' }}
             </div>
           </div>
-        </template>
+        </div>
       </div>
     </div>
   </div>
@@ -53,21 +51,6 @@ export default defineComponent({
     }
     getRankingList()
 
-    //懒加载实现
-    const clientWidth = ref(0)
-    //图片宽度
-    onMounted(() => {
-      clientWidth.value = document.querySelector(
-        '.rankingList-container'
-      ).clientWidth
-    })
-    const scrollLeft = ref(0)
-    //获取横向滚动条进度
-    const fn = e => {
-      scrollLeft.value = e.target.scrollLeft
-    }
-    const getScrollLeft = _.throttle(fn, 100)
-
     //监听刷新
     const refresh = inject('refresh')
     watch(refresh, () => {
@@ -87,10 +70,7 @@ export default defineComponent({
     })
 
     return {
-      rankList,
-      getScrollLeft,
-      scrollLeft,
-      clientWidth
+      rankList
     }
   }
 })
