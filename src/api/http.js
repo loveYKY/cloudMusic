@@ -22,6 +22,7 @@ http.interceptors.request.use(async config => {
   const headers = token
     ? {
         ...config.headers,
+        cookie: Cookies.get('cookie'),
         token: token
       }
     : config.headers
