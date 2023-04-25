@@ -13,6 +13,7 @@
           v-for="(childItem, childIndex) in item.data"
           :key="childIndex"
           class="blockItem"
+          @click="jumpToDigitDetail(childItem.albumId)"
         >
           <img v-lazy="`${childItem.coverUrl}?param=75y75`" />
           <div>
@@ -31,10 +32,13 @@
 
 <script>
 import { defineComponent, ref, onMounted, inject, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import Api from '@/api/index.js'
 
 export default defineComponent({
   setup() {
+    const router = useRouter()
+
     const albumList = ref([])
     for (let i = 0; i < 6; i++) {
       albumList.value.push([])
@@ -55,8 +59,19 @@ export default defineComponent({
 
     getAlbumList()
 
+    const jumpToDigitDetail = id => {
+      console.log(id)
+      router.push({
+        path: '/digitDetail',
+        query: {
+          id: id
+        }
+      })
+    }
+
     return {
-      albumList
+      albumList,
+      jumpToDigitDetail
     }
   }
 })

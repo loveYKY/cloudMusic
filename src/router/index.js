@@ -14,12 +14,12 @@ const routes = [
     component: () => import('../views/songList/index.vue')
   },
   {
-    path: '/albumSquare',
-    component: () => import('../views/albumSquare/index.vue')
-  },
-  {
     path: '/albumSong',
     component: () => import('../views/albumSong/index.vue')
+  },
+  {
+    path: '/digitDetail',
+    component: () => import('../views/DigitDetail/index.vue')
   },
   {
     path: '/comment',

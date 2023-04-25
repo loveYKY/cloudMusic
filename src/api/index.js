@@ -49,6 +49,10 @@ const getComment = (type, id, limit, offset) => {
   )
 }
 
+const getDigitDetail = id => {
+  return request('get', `/album/detail?id=${id}`)
+}
+
 export default {
   getAnonimousCookie,
   loginRefresh,
@@ -60,5 +64,6 @@ export default {
   getAlbumDetail,
   getSongDetail,
   getLyric,
-  getComment
+  getComment,
+  getDigitDetail
 }

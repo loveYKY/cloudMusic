@@ -79,10 +79,12 @@ export default defineComponent({
       }
     })
 
+    //跳转到歌单广场
     const toSongList = () => {
       router.push('/songList')
-      //跳转至歌单详情页面
     }
+
+    //跳转至歌单详情页面
     const goToDetail = id => {
       router.push({
         path: '/albumSong',
