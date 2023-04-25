@@ -76,12 +76,21 @@ export default defineComponent({
 
     //游客登陆
     const getAnonimousCookie = async () => {
-      if (Cookie.get('cookie')) return
-      let res = await Api.getAnonimousCookie()
-
-      if (res.code == 200) {
-        Cookie.set('cookie', res.cookie)
+      let res = null
+      if (Cookie.get('cookie')) {
+        res = await fetch(
+          'https://netease-cloud-music-api-iota-five.vercel.app/login/refresh'
+        )
+      } else {
+        res = await fetch(
+          'https://netease-cloud-music-api-iota-five.vercel.app/register/anonimous'
+        )
       }
+      res.json().then(data => {
+        if (data.code == 200) {
+          Cookie.set('cookie', data.cookie)
+        }
+      })
     }
     getAnonimousCookie()
 
