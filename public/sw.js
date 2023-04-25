@@ -12,7 +12,13 @@ self.addEventListener('install', function (event) {
 })
 
 self.addEventListener('activate', event => {
-  console.log('activate')
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      cacheNames.map(name => {
+        caches.delete(name)
+      })
+    })
+  )
 })
 
 self.addEventListener('fetch', function (event) {
