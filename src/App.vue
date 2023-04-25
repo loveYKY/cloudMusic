@@ -12,7 +12,9 @@ export default defineComponent({
   components: {
     AutoPlay
   },
-  setup() {}
+  setup() {
+
+  }
 })
 </script>
 

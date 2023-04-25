@@ -24,6 +24,70 @@
     <!-- built files will be auto injected -->
   </body>
   <script>
+    //在页面代码里面监听onload事件，使用sw的配置文件注册一个service worker
+
+    //用来提醒用户的
+    function emitUpdate() {
+      console.log('发出更新提醒')
+      var event = document.createEvent('Event')
+      event.initEvent('sw.update', true, true)
+      window.dispatchEvent(event)
+    }
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('./sw.js', {
+          scope: '../'
+        })
+        .then(function (reg) {
+          if (reg.waiting) {
+            emitUpdate()
+            return
+          }
+
+          //监听updatefound事件
+          reg.onupdatefound = function () {
+            var installingWorker = reg.installing
+            installingWorker.onstatechange = function () {
+              switch (installingWorker.state) {
+                case 'installed':
+                  //有新的sw已经安装完毕，则触发emitUpdate事件提醒用户
+                  if (navigator.serviceWorker.controller) {
+                    emitUpdate()
+                  }
+                  break
+              }
+            }
+          }
+        })
+        .catch(function (e) {
+          console.error('Error during service worker registration:', e)
+        })
+    }
+
+    window.addEventListener('sw.update', () => {
+      console.log('触发更新提醒')
+      if (
+        window.confirm(
+          '程序后台有新的service worker版本，请问是否刷新页面以更新最新的service worker'
+        )
+      ) {
+        try {
+          navigator.serviceWorker.getRegistration().then(reg => {
+            reg.waiting.postMessage('skipWaiting')
+          })
+        } catch (e) {
+          window.location.reload()
+        }
+      } else {
+        console.log('不更新sw.js')
+      }
+    })
+
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      console.log('sw发生更新，页面重载')
+      window.location.reload()
+    })
     // //进入全屏
     // function requestFullScreen() {
     //   var de = document.documentElement

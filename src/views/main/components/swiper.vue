@@ -29,22 +29,22 @@ export default defineComponent({
       {
         name: '每日推荐',
         path: '',
-        image: 'thumb-circle'
+        image: 'thumb-circle-o'
       },
       {
         name: '私人FM',
         path: '',
-        image: 'wap-home'
+        image: 'wap-home-o'
       },
       {
         name: '歌单',
         path: '',
-        image: 'todo-list'
+        image: 'todo-list-o'
       },
       {
         name: '排行榜',
         path: '',
-        image: 'hot'
+        image: 'hot-o'
       }
     ])
     //获取轮播图
@@ -90,7 +90,7 @@ export default defineComponent({
         height: 0.8533rem;
         width: 0.8533rem;
         border-radius: 0.8533rem;
-        background-color: #f4a5a5;
+        background-color: #fff2e8;
         position: relative;
         .item {
           position: absolute;

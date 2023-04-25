@@ -16,3 +16,4 @@ createApp(App)
     lazyComponent: true
   })
   .mount('#app')
+
