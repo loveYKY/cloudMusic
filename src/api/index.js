@@ -6,6 +6,9 @@ import { request } from './helper'
 const getAnonimousCookie = () => {
   return request('get', '/register/anonimous')
 }
+const loginRefresh = () => {
+  return request('get', '/login/refresh')
+}
 
 const getSwiper = () => {
   return request('get', '/banner')
@@ -48,6 +51,7 @@ const getComment = (type, id, limit, offset) => {
 
 export default {
   getAnonimousCookie,
+  loginRefresh,
   getSwiper,
   getRecommendSongList,
   getRankingList,

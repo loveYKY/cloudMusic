@@ -78,19 +78,14 @@ export default defineComponent({
     const getAnonimousCookie = async () => {
       let res = null
       if (Cookie.get('cookie')) {
-        res = await fetch(
-          'https://netease-cloud-music-api-iota-five.vercel.app/login/refresh'
-        )
+        res = await Api.loginRefresh()
       } else {
-        res = await fetch(
-          'https://netease-cloud-music-api-iota-five.vercel.app/register/anonimous'
-        )
+        res = await Api.getAnonimousCookie()
       }
-      res.json().then(data => {
-        if (data.code == 200) {
-          Cookie.set('cookie', data.cookie)
-        }
-      })
+
+      if (res.code == 200) {
+        Cookie.set('cookie', res.cookie)
+      }
     }
     getAnonimousCookie()
 
