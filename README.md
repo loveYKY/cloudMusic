@@ -2,6 +2,7 @@
 项目描述：基于html+css+js+vue3.x+vuex+vant，以及网易云音乐开源API实现的移动端音乐网页项目
 
 项目要点：完成播放器首页、歌单广场、歌单详情、歌单播放、评论详情等页面的开发，实现歌单详情页面吸顶滚动效果，实现歌词随播放进度滚动的功能，实现音乐循环播放以及批量播放的功能。以及使用等高与非登高虚拟滚动对评论列表和歌单列表进行了性能优化，使用懒加载对播放器首页进行了性能优化
+
 线上地址：https://guileless-raindrop-5ee961.netlify.app/#/main
 
 ![image](https://user-images.githubusercontent.com/92415895/210703721-06d5c14c-e3f9-4016-9d99-7f896d3783a2.png)
