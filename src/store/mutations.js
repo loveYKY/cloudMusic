@@ -45,5 +45,8 @@ export default {
   },
   timeupdate: (state, val) => {
     state.currentTime = val
+  },
+  changeSearchValue: (state, val) => {
+    state.searchValue = val
   }
 }

@@ -17,4 +17,5 @@ export default {
   playControl:false,
   currentTime:0,
   tag: "流行",
+  searchValue: "",
 }

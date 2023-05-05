@@ -24,7 +24,11 @@ const routes = [
   {
     path: '/comment',
     component: () => import('@/components/comment/index.vue')
-  }
+  },
+  {
+    path: '/search',
+    component: () => import('../views/Search/index.vue')
+  },
 ]
 
 const router = createRouter({

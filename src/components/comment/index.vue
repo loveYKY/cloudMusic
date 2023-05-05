@@ -88,8 +88,9 @@ export default defineComponent({
   },
   setup(props, context) {
     const route = useRoute()
+    const router = useRouter()
     const goBack = () => {
-      window.history.back(-1)
+      router.go(-1)
     }
 
     const modelRef = ref({

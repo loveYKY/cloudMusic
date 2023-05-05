@@ -52,7 +52,7 @@ export default defineComponent({
     const activeKey = ref(null)
 
     const handleSearch = ()=> {
-      alert('待开发')
+      router.push('/search')
     }
 
     watch(

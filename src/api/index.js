@@ -53,6 +53,10 @@ const getDigitDetail = id => {
   return request('get', `/album/detail?id=${id}`)
 }
 
+const getSearch = keyword => {
+  return request('get', `/search?keywords=${keyword}`)
+}
+
 export default {
   getAnonimousCookie,
   loginRefresh,
@@ -65,5 +69,6 @@ export default {
   getSongDetail,
   getLyric,
   getComment,
-  getDigitDetail
+  getDigitDetail,
+  getSearch
 }
